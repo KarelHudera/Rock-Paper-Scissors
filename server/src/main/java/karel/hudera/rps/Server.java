@@ -1,6 +1,6 @@
 package karel.hudera.rps;
 
-import karel.hudera.rps.utils.LoggingServer;
+import karel.hudera.rps.utils.Logging;
 
 import java.io.*;
 import java.net.*;
@@ -12,7 +12,7 @@ public class Server {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
 
     public static void main(String args[]) throws IOException {
-        LoggingServer.configureLogger(logger, "server.log");
+        Logging.configureLogger(logger, "server.log");
 
         try {
             // create a server socket on port number 9090
