@@ -3,42 +3,71 @@ package karel.hudera.rps;
 import karel.hudera.rps.utils.Logging;
 
 import java.io.*;
-import java.net.*;
-import java.util.logging.Level;
+import java.net.Socket;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
+/**
+ * Represents the client that connects to the Rock-Paper-Scissors server.
+ */
 public class Client {
-
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int SERVER_PORT = 9090;
     private static final Logger logger = Logger.getLogger(Client.class.getName());
 
-    public static void main(String args[]) throws IOException {
+    private PrintWriter writer;
+    private BufferedReader reader;
+    private String token;
 
+    /**
+     * Main method to start the client.
+     *
+     * @param args command-line arguments (not used)
+     */
+    public static void main(String[] args) {
+
+        // Configure logging for the client
         Logging.configureLogger(logger, "client.log");
-        try {
-            // create a socket to connect to the server running on localhost at port number 9090
-            logger.info("Attempting to connect to server...");
-            Socket socket = new Socket("localhost", 9090);
-            logger.info("Connected to server");
 
-            // Setup output stream to send data to the server
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        // Start the client
+        new Client().start();
+    }
 
-            // Setup input stream to receive data from the server
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    /**
+     * Starts the client and handles user interaction.
+     */
+    public void start() {
+        try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT)) {
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new PrintWriter(socket.getOutputStream(), true);
+            Scanner scanner = new Scanner(System.in);
 
-            // Send message to the server
-            logger.info("Sending message to server...");
-            out.println("Hello from client!");
+            System.out.println(reader.readLine()); // Welcome message
 
-            // Receive response from the server
-            String response = in.readLine();
-            System.out.println("Server says: " + response);
+            // Authentication
+            System.out.print("Enter username: ");
+            String username = scanner.nextLine();
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine();
 
-            // Close the socket
-            socket.close();
-            logger.info("Connection closed");
+            writer.println("LOGIN|" + username + "|" + password);
+            String response = reader.readLine();
+            if (response.startsWith("LOGIN_SUCCESS")) {
+                token = response.split("\\|")[1];
+                System.out.println("Login successful! Token: " + token);
+            } else {
+                System.out.println("Login failed.");
+                return;
+            }
+
+            // Sending a move
+            System.out.print("Enter your move (ROCK, PAPER, SCISSORS): ");
+            String move = scanner.nextLine();
+            writer.println("PLAY|" + token + "|" + move);
+            System.out.println("Server response: " + reader.readLine());
+
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error: ", e.toString());
+            logger.severe("Error: " + e.getMessage());
         }
     }
 }

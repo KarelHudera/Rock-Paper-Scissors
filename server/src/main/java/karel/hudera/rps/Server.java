@@ -4,42 +4,71 @@ import karel.hudera.rps.utils.Logging;
 
 import java.io.*;
 import java.net.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The {@code Server} class represents the game server for Rock-Paper-Scissors.
+ * It manages client connections, authentication, and multithreaded request handling.
+ * <p>
+ * Uses an {@link ExecutorService} to limit the number of concurrent client connections.
+ * </p>
+ */
 public class Server {
+    private static final int PORT = 9090;
+    private static final int MAX_THREADS = 10;
 
-    private static final Logger logger = Logger.getLogger(Server.class.getName());
+    // Logger instance for server logging
+    static final Logger logger = Logger.getLogger(Server.class.getName());
 
-    public static void main(String args[]) throws IOException {
+    // Stores active users (username -> authentication token)
+    private final Map<String, String> activeUsers = new ConcurrentHashMap<>();
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_THREADS);
+
+    /**
+     * Entry point of the server application.
+     *
+     * @param args command-line arguments (not used)
+     */
+    public static void main(String[] args) {
+
+        // Configure logging for the server
         Logging.configureLogger(logger, "server.log");
 
-        try {
-            // create a server socket on port number 9090
-            ServerSocket serverSocket = new ServerSocket(9090);
-            logger.info("Server is running and waiting for client connection...");
+        // Start the server
+        new Server().start();
+    }
 
-            // Accept incoming client connection
-            Socket clientSocket = serverSocket.accept();
-            logger.info("Client connected!");
+    /**
+     * Starts the game server, listens for client connections, and assigns them to the thread pool.
+     */
+    public void start() {
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            logger.info("Server started on port " + PORT);
 
-            // Setup input and output streams for communication with the client
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                logger.info("New connection from: " + clientSocket.getRemoteSocketAddress());
 
-            // Read message from client
-            String message = in.readLine();
-            System.out.println("Client says: " + message);
-
-            // Send response to the client
-            out.println("Message received by the server.");
-
-            // Close the client socket
-            clientSocket.close();
-            // Close the server socket
-            serverSocket.close();
+                // Submit client handling task to the thread pool
+                threadPool.execute(new ClientHandler(clientSocket, activeUsers));
+            }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error: ", e.toString());
+            logger.log(Level.SEVERE, "Server encountered an error", e);
+        } finally {
+            shutdownServer();
         }
+    }
+
+    /**
+     * Gracefully shuts down the server by terminating the thread pool.
+     */
+    private void shutdownServer() {
+        logger.info("Shutting down server...");
+        threadPool.shutdown();
     }
 }
