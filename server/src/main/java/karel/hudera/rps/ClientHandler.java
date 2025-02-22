@@ -15,19 +15,23 @@ import static karel.hudera.rps.Server.logger;
 public class ClientHandler extends Thread {
     private final Socket socket;
     private final Map<String, String> activeUsers;
+    private final Map<String, String> validUsers;
     private PrintWriter writer;
     private BufferedReader reader;
     private String username;
+    private String password;
+
 
     /**
      * Creates a new {@code ClientHandler} to manage a client's session.
      *
-     * @param socket       the client's socket connection
-     * @param activeUsers  a shared map of active users and their authentication tokens
+     * @param socket      the client's socket connection
+     * @param activeUsers a shared map of active users and their authentication tokens
      */
-    public ClientHandler(Socket socket, Map<String, String> activeUsers) {
+    public ClientHandler(Socket socket, Map<String, String> activeUsers, Map<String, String> validUsers) {
         this.socket = socket;
         this.activeUsers = activeUsers;
+        this.validUsers = validUsers;
     }
 
     @Override
@@ -36,45 +40,49 @@ public class ClientHandler extends Thread {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new PrintWriter(socket.getOutputStream(), true);
 
-            writer.println("Welcome! Use LOGIN|username|password to authenticate.");
+            writer.println("Welcome! Please enter your username and password:");
 
-            String input;
-            while ((input = reader.readLine()) != null) {
-                String[] parts = input.split("\\|");
-                String command = parts[0];
+            // Read the combined username and password
+            String userCredentials = reader.readLine();
+            String[] credentials = userCredentials.split(":");
 
-                if ("LOGIN".equals(command) && parts.length == 3) {
-                    handleLogin(parts[1], parts[2]);
-                } else if ("PLAY".equals(command) && parts.length == 2) {
-                    handlePlay(parts[1]);
+
+            if (credentials.length == 2) {
+                username = credentials[0].trim();
+                password = credentials[1].trim();
+
+                logger.info("Received login attempt - Username: [" + username + "], Password: [" + password + "]");
+
+                if (validUsers.containsKey(username) && validUsers.get(username).equals(password)) {
+                    String token = UUID.randomUUID().toString();
+                    activeUsers.put(username, token);
+                    writer.println("LOGIN_SUCCESS|" + token);
+                    logger.info("User " + username + " logged in.");
+
+                    // Keep session open for further communication
+                    while (true) {
+                        String clientMessage = reader.readLine();
+                        if (clientMessage == null || clientMessage.equalsIgnoreCase("EXIT")) {
+                            break;
+                        }
+                        // Placeholder for future gameplay commands
+                        writer.println("SERVER_ACK: Received -> " + clientMessage);
+                    }
                 } else {
-                    writer.println("ERROR|Unknown command.");
+                    writer.println("LOGIN_FAILED");
+                    logger.warning("Login failed for username: [" + username + "]");
+                    socket.close();
                 }
+            } else {
+                writer.println("LOGIN_FAILED");
+                logger.warning("Login failed for username: [" + username + "]");
+                socket.close();
             }
+
         } catch (IOException e) {
             logger.log(Level.WARNING, "Connection lost with " + username, e);
         } finally {
             cleanup();
-        }
-    }
-
-    private void handleLogin(String username, String password) {
-        if ("secret".equals(password)) { // Replace with real authentication logic
-            this.username = username;
-            String token = UUID.randomUUID().toString();
-            activeUsers.put(username, token);
-            writer.println("LOGIN_SUCCESS|" + token);
-            logger.info("User " + username + " logged in.");
-        } else {
-            writer.println("LOGIN_FAILED");
-        }
-    }
-
-    private void handlePlay(String token) {
-        if (activeUsers.containsValue(token)) {
-            writer.println("VALID_MOVE");
-        } else {
-            writer.println("INVALID_TOKEN");
         }
     }
 
@@ -85,6 +93,7 @@ public class ClientHandler extends Thread {
         }
         try {
             socket.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 }

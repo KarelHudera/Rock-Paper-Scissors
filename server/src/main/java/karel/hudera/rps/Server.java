@@ -20,13 +20,17 @@ import java.util.logging.Logger;
  */
 public class Server {
     private static final int PORT = 9090;
-    private static final int MAX_THREADS = 10;
+    private static final int MAX_THREADS = 3;
 
     // Logger instance for server logging
     static final Logger logger = Logger.getLogger(Server.class.getName());
 
     // Stores active users (username -> authentication token)
     private final Map<String, String> activeUsers = new ConcurrentHashMap<>();
+    private final Map<String, String> validUsers = Map.of(
+            "kar", "1234"
+    );
+
     private final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_THREADS);
 
     /**
@@ -55,7 +59,7 @@ public class Server {
                 logger.info("New connection from: " + clientSocket.getRemoteSocketAddress());
 
                 // Submit client handling task to the thread pool
-                threadPool.execute(new ClientHandler(clientSocket, activeUsers));
+                threadPool.execute(new ClientHandler(clientSocket, activeUsers, validUsers));
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Server encountered an error", e);

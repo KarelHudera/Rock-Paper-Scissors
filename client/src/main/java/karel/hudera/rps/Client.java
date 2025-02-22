@@ -38,33 +38,47 @@ public class Client {
      */
     public void start() {
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT)) {
+            logger.info("Connected to " + socket.getRemoteSocketAddress());
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new PrintWriter(socket.getOutputStream(), true);
             Scanner scanner = new Scanner(System.in);
 
             System.out.println(reader.readLine()); // Welcome message
 
-            // Authentication
-            System.out.print("Enter username: ");
-            String username = scanner.nextLine();
-            System.out.print("Enter password: ");
-            String password = scanner.nextLine();
+            // Authentication loop
+            while (true) {
+                System.out.print("Enter username: ");
+                String username = scanner.nextLine();
 
-            writer.println("LOGIN|" + username + "|" + password);
-            String response = reader.readLine();
-            if (response.startsWith("LOGIN_SUCCESS")) {
-                token = response.split("\\|")[1];
-                System.out.println("Login successful! Token: " + token);
-            } else {
-                System.out.println("Login failed.");
-                return;
+
+                System.out.print("Enter password: ");
+                String password = scanner.nextLine();
+
+                writer.println(username + ":" + password);
+
+                String response = reader.readLine();
+                logger.info("Server response: " + response);
+
+                if (response.startsWith("LOGIN_SUCCESS")) {
+                    System.out.println("Login successful");
+                    break;
+                } else {
+                    System.out.println("Login failed. Please try again.");
+                }
             }
 
-            // Sending a move
-            System.out.print("Enter your move (ROCK, PAPER, SCISSORS): ");
-            String move = scanner.nextLine();
-            writer.println("PLAY|" + token + "|" + move);
-            System.out.println("Server response: " + reader.readLine());
+            // Message sending loop
+            while (true) {
+                System.out.print("Enter message (or EXIT to quit): ");
+                String message = scanner.nextLine();
+                writer.println(message);
+
+                if (message.equalsIgnoreCase("EXIT")) {
+                    System.out.println("Exiting...");
+                    break;
+                }
+                System.out.println("Server response: " + reader.readLine());
+            }
 
         } catch (IOException e) {
             logger.severe("Error: " + e.getMessage());
