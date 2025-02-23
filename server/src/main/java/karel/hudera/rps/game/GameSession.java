@@ -1,8 +1,7 @@
-package karel.hudera.rps.server;
+package karel.hudera.rps.game;
 
 import karel.hudera.rps.constants.Constants;
-import karel.hudera.rps.game.GameResult;
-import karel.hudera.rps.game.Move;
+import karel.hudera.rps.server.ClientHandler;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -11,7 +10,7 @@ import java.util.logging.Logger;
  * Represents a game session between two players.
  * Handles the flow of the game, determining the winner and sending game results.
  */
-class GameSession {
+public class GameSession {
 
     /**
      * Logger instance for logging server activity

@@ -28,7 +28,7 @@ public class ClientHandler implements Runnable {
     /**
      * Input stream to read objects sent by the client
      */
-    ObjectInputStream input;
+    public ObjectInputStream input;
 
     /**
      * Output stream to send objects to the client
@@ -38,7 +38,7 @@ public class ClientHandler implements Runnable {
     /**
      * The username of the connected client
      */
-    String username;
+    public String username;
 
     /**
      * Constructs a new {@code ClientHandler} to manage communication with the connected client.
@@ -70,19 +70,19 @@ public class ClientHandler implements Runnable {
 
                     if (Server.isUserLoggedIn(username)) {
                         output.writeObject(Constants.USERNAME_TAKEN);
-                        logger.warning("❌ Duplicate login attempt for: " + username);
+                        logger.warning(Constants.LOG_DUPLICATE_LOGIN + username);
                         continue;
                     }
 
                     if (isValidUser(username, password)) {
                         Server.addUser(username);
                         output.writeObject(Constants.OK);
-                        logger.info("✅ User authenticated: " + username);
+                        logger.info(Constants.LOG_AUTH_SUCCESS + username);
                         this.username = username;
                         break;
                     } else {
                         output.writeObject(Constants.AUTH_FAILED);
-                        logger.warning("❌ Authentication failed for: " + username);
+                        logger.warning(Constants.LOG_AUTH_FAIL + username);
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package karel.hudera.rps.server;
 
 import karel.hudera.rps.constants.Constants;
+import karel.hudera.rps.game.GameSession;
 
 import java.io.*;
 import java.net.*;
@@ -135,6 +136,6 @@ public class Server {
         allowedUsers.put("admin", "adminpass");
         allowedUsers.put("player1", "rpsgame");
 
-        logger.info("✅ Allowed users loaded: " + allowedUsers.keySet());
+        logger.info(Constants.LOG_USERS_LOADED + allowedUsers.keySet());
     }
 }

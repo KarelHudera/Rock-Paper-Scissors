@@ -87,7 +87,7 @@ public class Client {
                 System.out.print(Constants.ENTER_USERNAME);
                 username = reader.readLine();
 
-                System.out.print("Enter your password: ");
+                System.out.print(Constants.ENTER_PASSWORD);
                 password = reader.readLine();
 
                 // Send credentials
@@ -98,14 +98,14 @@ public class Client {
                 // Read server response
                 Object response = input.readObject();
                 if (Constants.OK.equals(response)) {
-                    logger.info("✅ Authentication successful: " + username);
+                    logger.info(Constants.LOG_AUTH_SUCCESS + username);
                     break;
                 } else if (Constants.AUTH_FAILED.equals(response)) {
-                    System.out.println("❌ Invalid username or password, try again.");
-                    logger.warning("⚠️ Authentication failed.");
+                    System.out.println(Constants.AUTH_FAILED);
+                    logger.warning(Constants.LOG_AUTH_FAIL + username);
                 } else if (Constants.USERNAME_TAKEN.equals(response)) {
-                    System.out.println("❌ This username is already logged in, try a different one.");
-                    logger.warning("⚠️ Duplicate login attempt: " + username);
+                    System.out.println(Constants.USERNAME_TAKEN);
+                    logger.warning(Constants.LOG_DUPLICATE_LOGIN + username);
                 }
             }
 
