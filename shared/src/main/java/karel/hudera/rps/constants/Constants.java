@@ -13,6 +13,13 @@ public class Constants {
     public static final String OK = "OK";
 
     // Game messages
+    public static final String GAME_STARTED = "Game started! You are playing against ";
+    public static final String DRAW = "It's a draw!";
+    public static final String WINS = " wins!";
+
+    public static final String LOG_GAME_SESSION_STARTED = "🎮 Starting game between %s and %s";
+    public static final String LOG_GAME_RESULT = "🏆 Game result: %s";
+    public static final String LOG_GAME_ERROR = "❌ Error in game session: ";
     public static final String GAME_RESULT = "🏆 Game result: ";
     public static final String ENTER_USERNAME = "🔑 Enter your username: ";
     public static final String USERNAME_TAKEN = "❌ Username already taken, try again.";
@@ -20,14 +27,16 @@ public class Constants {
     public static final String ENTER_MOVE = "✊✋✌️ Enter your move (ROCK, PAPER, SCISSORS): ";
 
     // Logging messages
+    public static final String LOG_SERVER_STOPPED = "🔧 Server stopped.";
+    public static final String LOG_SERVER_RUNNING = "🔧 Server is running...";
     public static final String LOG_AUTH_ATTEMPT = "🔑 Attempting to authenticate username: ";
     public static final String LOG_AUTH_SUCCESS = "✅ Username accepted: ";
     public static final String LOG_USERNAME_TAKEN = "❌ Username already taken, user prompted to try again.";
     public static final String LOG_WAITING_OPPONENT = "⏳ Waiting for opponent...";
     public static final String LOG_RECEIVED_MESSAGE = "📩 Received message: ";
     public static final String LOG_MOVE_SENT = "✊✋✌️ Move sent: ";
-    public static final String LOG_GAME_RESULT = "🏆 Game result received: ";
     public static final String LOG_CLIENT_ERROR = "❌ Error in client operation";
     public static final String LOG_CLIENT_CLOSED = "⚙️ Client connection closed.";
     public static final String LOG_CLIENT_CLOSE_ERROR = "❌ Error closing client connection";
+    public static final String LOG_CLIENT_CONNECTED = "🔗 Client %s has connected.";
 }

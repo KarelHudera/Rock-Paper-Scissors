@@ -16,13 +16,13 @@ import karel.hudera.rps.utils.Logging;
  */
 public class StartServer {
 
-    static final Logger logger = Logger.getLogger(StartServer.class.getName());
+    static final Logger logger = Logger.getLogger("ServerLogger");
 
     public static void main(String[] args) {
 
         Logging.configureLogger(logger, "client.log");
 
-        Server server = new Server();
+        Server server = new Server(logger);
         server.initialize(9090);
     }
 }

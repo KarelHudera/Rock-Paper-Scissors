@@ -16,7 +16,7 @@ import karel.hudera.rps.utils.Logging;
  */
 public class StartClient {
 
-    static final Logger logger = Logger.getLogger(StartClient.class.getName());
+    static final Logger logger = Logger.getLogger("ClientLogger");
 
     public static void main(String[] args) {
 

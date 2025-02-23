@@ -5,24 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a91b8b99-cda5-4337-a6db-7cc7f7f05e8b" name="Changes" comment="feat: project icon">
-      <change afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/StartClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/client/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/StartServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/GameSession.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/Server.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/constants/Constants.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/GameResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/client/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/Client.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/server/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/ClientHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/Server.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/shared/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/utils/Logging.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/utils/Logging.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/client/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/StartServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/StartServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/GameSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/GameSession.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/constants/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/constants/Constants.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +48,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -81,43 +71,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Client.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.Server.executor": "Run",
-    "Application.StartClient.executor": "Run",
-    "Application.StartServer.executor": "Run",
-    "JAR Application.client-1.0-SNAPSHOT.jar.executor": "Run",
-    "JAR Application.client-1.0.0-SNAPSHOT.jar.executor": "Run",
-    "JAR Application.original-client-1.0.0-SNAPSHOT.jar.executor": "Run",
-    "JAR Application.shared-1.0.0-SNAPSHOT.jar.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "develop",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/karelhudera/IdeaProjects/Rock-Paper-Scissors",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "show.migrate.to.gradle.popup": "false",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Client.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Server.executor&quot;: &quot;Run&quot;,
+    &quot;Application.StartClient.executor&quot;: &quot;Run&quot;,
+    &quot;Application.StartServer.executor&quot;: &quot;Run&quot;,
+    &quot;JAR Application.client-1.0-SNAPSHOT.jar.executor&quot;: &quot;Run&quot;,
+    &quot;JAR Application.client-1.0.0-SNAPSHOT.jar.executor&quot;: &quot;Run&quot;,
+    &quot;JAR Application.original-client-1.0.0-SNAPSHOT.jar.executor&quot;: &quot;Run&quot;,
+    &quot;JAR Application.shared-1.0.0-SNAPSHOT.jar.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/karelhudera/IdeaProjects/Rock-Paper-Scissors&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="karel.hudera.rps" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.StartServer">
+  <component name="RunManager" selected="Application.StartClient">
     <configuration name="Client" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="ALTERNATIVE_JRE_PATH" value="23" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -182,9 +172,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.StartClient" />
         <item itemvalue="Application.StartServer" />
         <item itemvalue="JAR Application.client-1.0.0-SNAPSHOT.jar" />
-        <item itemvalue="Application.StartClient" />
         <item itemvalue="Application.Server" />
         <item itemvalue="JAR Application.original-client-1.0.0-SNAPSHOT.jar" />
       </list>

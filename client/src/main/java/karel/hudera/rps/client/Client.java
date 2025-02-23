@@ -32,16 +32,24 @@ import java.util.logging.Logger;
  */
 public class Client {
 
-    /** Logger instance for logging client activity */
+    /**
+     * Logger instance for logging client activity
+     */
     private final Logger logger;
 
-    /** The socket used for communication with the server. */
+    /**
+     * The socket used for communication with the server.
+     */
     private Socket socket;
 
-    /** Stream for sending objects to the server. */
+    /**
+     * Stream for sending objects to the server.
+     */
     private ObjectOutputStream output;
 
-    /** Stream for receiving objects from the server. */
+    /**
+     * Stream for receiving objects from the server.
+     */
     private ObjectInputStream input;
 
     /**
@@ -80,7 +88,7 @@ public class Client {
                 logger.info(Constants.LOG_AUTH_ATTEMPT + username);
 
                 Object response = input.readObject();
-                if (response instanceof String && response.equals("OK")) {
+                if (response instanceof String && response.equals(Constants.OK)) {
                     logger.info(Constants.LOG_AUTH_SUCCESS + username);
                     break;
                 } else {
@@ -108,7 +116,6 @@ public class Client {
             }
         } catch (IOException | ClassNotFoundException e) {
             logger.log(Level.SEVERE, Constants.LOG_CLIENT_ERROR, e);
-            e.printStackTrace();
         } finally {
             closeConnection();
         }
@@ -127,7 +134,6 @@ public class Client {
                 logger.info(Constants.LOG_CLIENT_CLOSED);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR, e);
         }
     }
