@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
         <groupId>karel.hudera.rps</groupId>
         <artifactId>Rock-Paper-Scissors</artifactId>
@@ -37,7 +36,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>karel.hudera.rps.Server</Main-Class>
+                            <Main-Class>karel.hudera.rps.StartServer</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>

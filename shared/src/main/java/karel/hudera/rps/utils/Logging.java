@@ -50,7 +50,7 @@ public class Logging {
             fileHandler.setLevel(Level.ALL);
 
         } catch (IOException e) {
-            System.err.println("Failed to configure logger: " + e.getMessage());
+            System.err.println("\uD83D\uDD34 Failed to configure logger: " + e.getMessage());
         }
     }
 }
