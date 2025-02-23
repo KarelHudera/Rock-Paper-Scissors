@@ -1,8 +1,6 @@
-# Rock-Paper-Scissors 
-## 🪨📄✂️
+![banner](./media/banner.svg)
 
-Java Client-Server Application
+# Rock-Paper-Scissors
 
 > [!NOTE]  
 > This project is a school assignment.
-
