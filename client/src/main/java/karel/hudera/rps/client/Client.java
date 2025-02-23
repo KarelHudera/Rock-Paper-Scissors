@@ -1,9 +1,9 @@
 package karel.hudera.rps.client;
 
-import karel.hudera.rps.StartClient;
 import karel.hudera.rps.constants.Constants;
 import karel.hudera.rps.game.GameResult;
 import karel.hudera.rps.game.Move;
+import karel.hudera.rps.utils.UserCredentials;
 
 import java.io.*;
 import java.net.Socket;
@@ -80,20 +80,32 @@ public class Client {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String username;
+            String password;
+
 
             while (true) {
                 System.out.print(Constants.ENTER_USERNAME);
                 username = reader.readLine();
-                output.writeObject(username);
+
+                System.out.print("Enter your password: ");
+                password = reader.readLine();
+
+                // Send credentials
+                UserCredentials.BasicCredentials credentials = new UserCredentials.BasicCredentials(username, password);
+                output.writeObject(credentials);
                 logger.info(Constants.LOG_AUTH_ATTEMPT + username);
 
+                // Read server response
                 Object response = input.readObject();
-                if (response instanceof String && response.equals(Constants.OK)) {
-                    logger.info(Constants.LOG_AUTH_SUCCESS + username);
+                if (Constants.OK.equals(response)) {
+                    logger.info("✅ Authentication successful: " + username);
                     break;
-                } else {
-                    System.out.println(Constants.USERNAME_TAKEN);
-                    logger.warning(Constants.LOG_USERNAME_TAKEN);
+                } else if (Constants.AUTH_FAILED.equals(response)) {
+                    System.out.println("❌ Invalid username or password, try again.");
+                    logger.warning("⚠️ Authentication failed.");
+                } else if (Constants.USERNAME_TAKEN.equals(response)) {
+                    System.out.println("❌ This username is already logged in, try a different one.");
+                    logger.warning("⚠️ Duplicate login attempt: " + username);
                 }
             }
 
@@ -131,8 +143,15 @@ public class Client {
         try {
             if (socket != null) {
                 socket.close();
-                logger.info(Constants.LOG_CLIENT_CLOSED);
             }
+            if (input != null) {
+                input.close();
+            }
+            if (output != null) {
+                output.close();
+            }
+            logger.info(Constants.LOG_CLIENT_CLOSED);
+
         } catch (IOException e) {
             logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR, e);
         }

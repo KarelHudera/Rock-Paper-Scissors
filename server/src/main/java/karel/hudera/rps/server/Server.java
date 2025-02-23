@@ -5,7 +5,9 @@ import karel.hudera.rps.constants.Constants;
 import java.io.*;
 import java.net.*;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
@@ -23,9 +25,12 @@ public class Server {
      * Logger instance for logging server activity
      */
     private static Logger logger;
-    private static final ExecutorService threadPool = Executors.newCachedThreadPool();
+    private static final ExecutorService threadPool = Executors.newFixedThreadPool(Constants.MAX_THREADS);
     private static final BlockingQueue<ClientHandler> waitingPlayers = new LinkedBlockingQueue<>();
     private static final Set<String> activeUsers = Collections.synchronizedSet(new HashSet<>());
+
+
+    private static final Map<String, String> allowedUsers = new HashMap<>();
 
     /**
      * Constructs a new Server instance.
@@ -34,6 +39,7 @@ public class Server {
      */
     public Server(Logger logger) {
         Server.logger = logger;
+        loadUsers();
     }
 
     /**
@@ -102,5 +108,33 @@ public class Server {
     public static void removeUser(String username) {
         activeUsers.remove(username);
         logger.info(Constants.LOG_CLIENT_CLOSED + username);
+    }
+
+    public static boolean isUserLoggedIn(String username) {
+        return activeUsers.contains(username);
+    }
+
+
+    /**
+     * Validates the username and password against the allowed users.
+     *
+     * @param username The username to check.
+     * @param password The password to verify.
+     * @return {@code true} if the credentials are valid, otherwise {@code false}.
+     */
+    public static boolean isValidUser(String username, String password) {
+        logger.info(username + " " + password);
+        return allowedUsers.containsKey(username) && allowedUsers.get(username).equals(password);
+    }
+
+    /**
+     * Loads valid users. In production, this should be from a database or configuration file.
+     */
+    private void loadUsers() {
+        allowedUsers.put("karel", "pass");
+        allowedUsers.put("admin", "adminpass");
+        allowedUsers.put("player1", "rpsgame");
+
+        logger.info("✅ Allowed users loaded: " + allowedUsers.keySet());
     }
 }

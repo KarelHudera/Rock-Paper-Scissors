@@ -20,7 +20,7 @@ public class StartServer {
 
     public static void main(String[] args) {
 
-        Logging.configureLogger(logger, "client.log");
+        Logging.configureLogger(logger, "server.log");
 
         Server server = new Server(logger);
         server.initialize(9090);

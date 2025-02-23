@@ -17,8 +17,8 @@ class GameSession {
      * Logger instance for logging server activity
      */
     private static Logger logger;
-    private ClientHandler player1;
-    private ClientHandler player2;
+    private final ClientHandler player1;
+    private final ClientHandler player2;
 
     /**
      * Constructs a new {@code GameSession} between two players.

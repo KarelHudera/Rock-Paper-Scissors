@@ -3,6 +3,7 @@ package karel.hudera.rps.constants;
 public class Constants {
     public static final int PORT = 9090;
     public static final String SERVER_ADDRESS = "localhost";
+    public static final int MAX_THREADS = 5;
 
     // Game moves
     public static final String ROCK = "ROCK";
@@ -39,4 +40,6 @@ public class Constants {
     public static final String LOG_CLIENT_CLOSED = "⚙️ Client connection closed.";
     public static final String LOG_CLIENT_CLOSE_ERROR = "❌ Error closing client connection";
     public static final String LOG_CLIENT_CONNECTED = "🔗 Client %s has connected.";
+
+    public static final String AUTH_FAILED = "❌ Authentication failed.";
 }

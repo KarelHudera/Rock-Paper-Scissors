@@ -1,9 +1,12 @@
 package karel.hudera.rps.server;
 
+import static karel.hudera.rps.server.Server.isValidUser;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+import karel.hudera.rps.utils.UserCredentials;
 import karel.hudera.rps.constants.Constants;
 
 
@@ -11,7 +14,7 @@ import karel.hudera.rps.constants.Constants;
  * Handles communication between the server and a connected client.
  * Each client runs in a separate thread.
  */
-class ClientHandler implements Runnable {
+public class ClientHandler implements Runnable {
 
     /**
      * Logger instance for logging client activity
@@ -20,7 +23,7 @@ class ClientHandler implements Runnable {
     /**
      * Socket instance representing the client's connection to the server
      */
-    private Socket socket;
+    private final Socket socket;
 
     /**
      * Input stream to read objects sent by the client
@@ -60,14 +63,27 @@ class ClientHandler implements Runnable {
             input = new ObjectInputStream(socket.getInputStream());
 
             while (true) {
-                username = (String) input.readObject();
-                if (Server.addUser(username)) {
-                    output.writeObject(Constants.OK);
-                    logger.info(Constants.LOG_AUTH_SUCCESS + username);
-                    break;
-                } else {
-                    output.writeObject(Constants.USERNAME_TAKEN);
-                    logger.warning(Constants.LOG_USERNAME_TAKEN + username);
+                Object received = input.readObject();
+                if (received instanceof UserCredentials.BasicCredentials credentials) {
+                    String username = credentials.username().trim();
+                    String password = credentials.password().trim();
+
+                    if (Server.isUserLoggedIn(username)) {
+                        output.writeObject(Constants.USERNAME_TAKEN);
+                        logger.warning("❌ Duplicate login attempt for: " + username);
+                        continue;
+                    }
+
+                    if (isValidUser(username, password)) {
+                        Server.addUser(username);
+                        output.writeObject(Constants.OK);
+                        logger.info("✅ User authenticated: " + username);
+                        this.username = username;
+                        break;
+                    } else {
+                        output.writeObject(Constants.AUTH_FAILED);
+                        logger.warning("❌ Authentication failed for: " + username);
+                    }
                 }
             }
 
