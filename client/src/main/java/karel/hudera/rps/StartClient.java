@@ -1,9 +1,14 @@
 package karel.hudera.rps;
 
-import java.util.logging.Logger;
-
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import karel.hudera.rps.client.Client;
 import karel.hudera.rps.utils.Logging;
+
+import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Entry point for starting the Rock-Paper-Scissors client.
@@ -14,7 +19,7 @@ import karel.hudera.rps.utils.Logging;
  *
  * @author Karel Hudera
  */
-public class StartClient {
+public class StartClient extends Application {
 
     static final Logger logger = Logger.getLogger("ClientLogger");
 
@@ -22,7 +27,18 @@ public class StartClient {
 
         Logging.configureLogger(logger, "client.log");
 
+        launch(); // This starts the JavaFX application
+
         Client client = new Client(logger);
         client.initialize("localhost", 9090);
+    }
+
+    @Override
+    public void start(Stage stage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(StartClient.class.getResource("hello-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        stage.setTitle("Hello!");
+        stage.setScene(scene);
+        stage.show();
     }
 }
