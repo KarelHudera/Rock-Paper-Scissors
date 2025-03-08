@@ -156,4 +156,25 @@ public class Client {
             logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR, e);
         }
     }
+
+    public boolean authenticate(String username, String password) {
+        try {
+            if (socket == null || socket.isClosed()) {
+                socket = new Socket("localhost", 9090);
+                output = new ObjectOutputStream(socket.getOutputStream());
+                input = new ObjectInputStream(socket.getInputStream());
+            }
+
+            UserCredentials.BasicCredentials credentials = new UserCredentials.BasicCredentials(username, password);
+            output.writeObject(credentials);
+            logger.info("Sent login attempt for user: " + username);
+
+            Object response = input.readObject();
+            return Constants.OK.equals(response);
+
+        } catch (IOException | ClassNotFoundException e) {
+            logger.severe("Login error: " + e.getMessage());
+        }
+        return false;
+    }
 }
