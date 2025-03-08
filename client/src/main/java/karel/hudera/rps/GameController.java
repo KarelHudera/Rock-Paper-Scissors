@@ -2,6 +2,9 @@ package karel.hudera.rps;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+
 import java.util.logging.Logger;
 
 public class GameController {
@@ -9,13 +12,30 @@ public class GameController {
     private static final Logger logger = Logger.getLogger("GameLogger");
 
     @FXML
-    private Button rockButton;
+    private StackPane loadingPane;
 
     @FXML
-    private Button paperButton;
+    private HBox buttonsPane;
 
     @FXML
-    private Button scissorsButton;
+    private StackPane movePlayedPane;
+
+    @FXML
+    private Button rockButton, paperButton, scissorsButton;
+
+    public void onOpponentConnected() {
+        // Hide loading screen, show buttons
+        loadingPane.setVisible(false);
+        buttonsPane.setVisible(true);
+    }
+
+    public void onMovePlayed() {
+        // Disable buttons, show move played screen
+        rockButton.setDisable(true);
+        paperButton.setDisable(true);
+        scissorsButton.setDisable(true);
+        movePlayedPane.setVisible(true);
+    }
 
     @FXML
     private void onRockClick() {

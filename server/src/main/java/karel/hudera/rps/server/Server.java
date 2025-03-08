@@ -133,8 +133,8 @@ public class Server {
      */
     private void loadUsers() {
         allowedUsers.put("karel", "pass");
-        allowedUsers.put("admin", "adminpass");
-        allowedUsers.put("player1", "rpsgame");
+        allowedUsers.put("admin", "asd");
+        allowedUsers.put("player1", "asd");
 
         logger.info(Constants.LOG_USERS_LOADED + allowedUsers.keySet());
     }

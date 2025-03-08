@@ -43,7 +43,7 @@ public class LoginController {
     }
 
     @FXML
-    private void onLoginButtonClick() {
+    private void onLoginButtonClick() throws IOException, ClassNotFoundException {
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim();
 

@@ -4,17 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c346e790-338c-42c0-b84e-1f1106b76a25" name="Changes" comment="feat: login and game UI">
-      <change afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/paper.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/rock.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/scissors.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/media/paper.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/media/rock.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/media/scissors.svg" afterDir="false" />
+    <list default="true" id="c346e790-338c-42c0-b84e-1f1106b76a25" name="Changes" comment="feat: game buttons">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/LoginController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/login-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/login-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +121,7 @@
       <option name="presentableId" value="Default" />
       <updated>1741361303617</updated>
       <workItem from="1741361305389" duration="140000" />
-      <workItem from="1741361514637" duration="11600000" />
+      <workItem from="1741361514637" duration="14204000" />
     </task>
     <task id="LOCAL-00001" summary="fix: idea logo">
       <option name="closed" value="true" />
@@ -144,7 +139,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741450314958</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: game buttons">
+      <option name="closed" value="true" />
+      <created>1741458449806</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1741458449806</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -164,6 +167,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="fix: idea logo" />
     <MESSAGE value="feat: login and game UI" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: login and game UI" />
+    <MESSAGE value="feat: game buttons" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: game buttons" />
   </component>
 </project>
