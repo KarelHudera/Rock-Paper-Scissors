@@ -9,7 +9,8 @@
 
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="karel.hudera.rps.LoginController"
-      style="-fx-background-color: #C7E4EE; -fx-padding: 40;">
+      style="-fx-background-color: linear-gradient(to right, #00AFFF, #0055AA)">
+    <!-- Gradient from darker steel blue to lighter sky blue -->
 
     <TextField fx:id="usernameField" promptText="Username" maxWidth="250"
                style="-fx-font-size: 14px; -fx-padding: 8px; -fx-background-radius: 10px;
@@ -20,13 +21,13 @@
                           -fx-border-color: gray; -fx-border-radius: 10px;"/>
 
     <Button text="Login" onAction="#onLoginButtonClick" maxWidth="250"
-            style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #ADD8E6;
+            style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: transparent;
                    -fx-text-fill: white; -fx-background-radius: 10px; -fx-padding: 10px;"/>
 
-    <!-- Outlined error box -->
+    <!-- Outlined error box with rounded corners -->
     <StackPane fx:id="errorBox" maxWidth="250" visible="false"
                style="-fx-border-color: red; -fx-border-width: 1px; -fx-border-radius: 10px;
-                      -fx-padding: 8px; -fx-background-color: #FFDDDD;">
+                      -fx-padding: 8px; -fx-background-color: #FFDDDD; -fx-background-radius: 10px;">
 
         <Label fx:id="errorLabel"
                style="-fx-text-fill: red; -fx-font-size: 12px;"/>

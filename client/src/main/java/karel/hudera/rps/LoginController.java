@@ -85,5 +85,6 @@ public class LoginController {
     private void hideError() {
         errorLabel.setText("");
         errorLabel.setOpacity(0);
+        errorBox.setVisible(false);
     }
 }
