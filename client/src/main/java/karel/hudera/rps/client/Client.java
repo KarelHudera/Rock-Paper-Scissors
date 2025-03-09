@@ -153,7 +153,7 @@ public class Client {
             logger.info(Constants.LOG_CLIENT_CLOSED);
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR, e);
+            logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR, e.getMessage());
         }
     }
 

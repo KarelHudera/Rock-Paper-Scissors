@@ -6,6 +6,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+
 <HBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="karel.hudera.rps.GameController"
       style="-fx-background-color: linear-gradient(to right, #00AFFF, #0055AA); -fx-fill-width: true; -fx-fill-height: true;">
@@ -13,7 +14,8 @@
     <!-- StackPane to center all elements -->
     <StackPane alignment="CENTER" style="-fx-padding: 20px;">
         <!-- Loading Screen (Initially visible) -->
-        <StackPane fx:id="loadingPane" visible="true" style="-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 20px;">
+        <StackPane fx:id="loadingPane" visible="true"
+                   style="-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 20px;">
             <Text text="Waiting for opponent..." style="-fx-font-size: 24px; -fx-fill: white;"/>
         </StackPane>
 
@@ -51,7 +53,8 @@
         </HBox>
 
         <!-- Move Played Card (Initially hidden) -->
-        <StackPane fx:id="movePlayedPane" visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 20px;">
+        <StackPane fx:id="movePlayedPane" visible="false"
+                   style="-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 20px;">
             <Text text="Move Played!" style="-fx-font-size: 24px; -fx-fill: white;"/>
         </StackPane>
     </StackPane>

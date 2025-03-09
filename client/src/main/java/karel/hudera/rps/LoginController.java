@@ -52,13 +52,13 @@ public class LoginController {
         String password = passwordField.getText().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            showMessage(errorBox, errorLabel, "Username and password cannot be empty.");
+            showMessage(errorBox, errorLabel, "Credentials cannot be empty.");
             return;
         }
 
         Client client = new Client(logger);
         if (client.authenticate(username, password)) {
-            showMessage(successBox, successLabel, "Login successful! Redirecting...");
+            showMessage(successBox, successLabel, "Login successful");
             proceedToGameScreen();
         } else {
             showMessage(errorBox, errorLabel, "Invalid username or password.");

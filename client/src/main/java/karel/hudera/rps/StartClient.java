@@ -27,10 +27,10 @@ public class StartClient extends Application {
 
         Logging.configureLogger(logger, "client.log");
 
-        launch(); // This starts the JavaFX application
-
         Client client = new Client(logger);
         client.initialize("localhost", 9090);
+
+        launch(); // This starts the JavaFX application
     }
 
     @Override
