@@ -10,7 +10,6 @@
 <VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="karel.hudera.rps.LoginController"
       style="-fx-background-color: linear-gradient(to right, #00AFFF, #0055AA)">
-    <!-- Gradient from darker steel blue to lighter sky blue -->
 
     <TextField fx:id="usernameField" promptText="Username" maxWidth="250"
                style="-fx-font-size: 14px; -fx-padding: 8px; -fx-background-radius: 10px;
@@ -24,12 +23,25 @@
             style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: transparent;
                    -fx-text-fill: white; -fx-background-radius: 10px; -fx-padding: 10px;"/>
 
-    <!-- Outlined error box with rounded corners -->
-    <StackPane fx:id="errorBox" maxWidth="250" visible="false"
-               style="-fx-border-color: red; -fx-border-width: 1px; -fx-border-radius: 10px;
-                      -fx-padding: 8px; -fx-background-color: #FFDDDD; -fx-background-radius: 10px;">
+    <!-- Message Container (Ensures only one message is visible) -->
+    <StackPane fx:id="messageContainer" maxWidth="250">
 
-        <Label fx:id="errorLabel"
-               style="-fx-text-fill: red; -fx-font-size: 12px;"/>
+        <!-- Error Box (Initially hidden) -->
+        <StackPane fx:id="errorBox" visible="false"
+                   style="-fx-border-color: red; -fx-border-width: 1px; -fx-border-radius: 10px;
+                          -fx-padding: 8px; -fx-background-color: #FFDDDD; -fx-background-radius: 10px;">
+            <Label fx:id="errorLabel"
+                   style="-fx-text-fill: red; -fx-font-size: 12px;"/>
+        </StackPane>
+
+        <!-- Success Box (Initially hidden) -->
+        <StackPane fx:id="successBox" visible="false"
+                   style="-fx-border-color: green; -fx-border-width: 1px; -fx-border-radius: 10px;
+                          -fx-padding: 8px; -fx-background-color: #DDFFDD; -fx-background-radius: 10px;">
+            <Label fx:id="successLabel"
+                   style="-fx-text-fill: green; -fx-font-size: 12px;"/>
+        </StackPane>
+
     </StackPane>
+
 </VBox>
