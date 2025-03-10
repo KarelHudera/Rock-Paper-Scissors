@@ -41,6 +41,7 @@
     -fx-border-color: red;
     -fx-background-color: #FFDDDD;
 }
+
 .login-error-text {
     -fx-text-fill: red;
     -fx-font-size: 12px;
@@ -51,6 +52,7 @@
     -fx-border-color: green;
     -fx-background-color: #DDFFDD;
 }
+
 .login-success-text {
     -fx-text-fill: green;
     -fx-font-size: 12px;

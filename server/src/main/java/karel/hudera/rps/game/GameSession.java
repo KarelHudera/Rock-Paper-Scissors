@@ -59,9 +59,10 @@ public class GameSession {
         } catch (IOException | ClassNotFoundException e) {
             logger.severe(Constants.LOG_GAME_ERROR + e.getMessage());
         } finally {
-            logger.info(Constants.LOG_CLIENT_CLOSED);
-            player1.closeResources();
-            player2.closeResources();
+            logger.info("HHHHHHHHHHHHHA");
+            //logger.info(Constants.LOG_CLIENT_CLOSED);
+           // player1.closeResources();
+          //  player2.closeResources();
         }
     }
 

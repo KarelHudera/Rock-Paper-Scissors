@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 
 import java.util.logging.Logger;
 
@@ -22,6 +23,16 @@ public class GameController {
 
     @FXML
     private Button rockButton, paperButton, scissorsButton;
+
+    @FXML
+    private Text selectedMoveText;
+
+    @FXML
+    private void initialize() {
+        loadingPane.setVisible(false);
+        buttonsPane.setVisible(true);
+    }
+
 
     public void onOpponentConnected() {
         // Hide loading screen, show buttons
@@ -54,6 +65,13 @@ public class GameController {
 
     private void handleMove(String move) {
         logger.info("Player chose: " + move);
+
+        // Display the selected move
+        selectedMoveText.setText("You chose: " + move);
+
+        // Hide buttons, show move played screen
+        buttonsPane.setVisible(false);
+        movePlayedPane.setVisible(true);
         // TODO: Send move to server and get the result
     }
 }

@@ -92,7 +92,7 @@ public class ClientHandler implements Runnable {
         } catch (IOException | ClassNotFoundException e) {
             logger.severe(Constants.LOG_CLIENT_ERROR + e.getMessage());
         } finally {
-            Server.removeUser(username);
+           // Server.removeUser(username);
         }
     }
 
