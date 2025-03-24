@@ -1,44 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
-  <component name="ChangeListManager">
-    <list default="true" id="3966731a-373f-405e-927c-da18ee2e551a" name="Changes" comment="fix: server error">
-      <change afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/worksapce.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/StartClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/StartClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/game/GameSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/game/GameSession.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" afterDir="false" />
-    </list>
-    <option name="SHOW_DIALOG" value="false" />
-    <option name="HIGHLIGHT_CONFLICTS" value="true" />
-    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
-    <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.StartClient.executor": "Run",
-    "Application.StartServer.executor": "Run",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "develop",
-    "node.js.selected.package.tslint": "(autodetect)"
-  }
-}]]></component>
-  <component name="TaskManager">
-    <servers />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat: styles" />
-    <MESSAGE value="fix: server error" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: server error" />
-  </component>
+  <component name="PropertiesComponent">{}</component>
 </project>
