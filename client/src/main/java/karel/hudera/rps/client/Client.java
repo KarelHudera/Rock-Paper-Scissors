@@ -75,62 +75,68 @@ public class Client {
     public void initialize(String serverAddress, int port) {
         try {
             socket = new Socket(serverAddress, port);
-            output = new ObjectOutputStream(socket.getOutputStream());
-            input = new ObjectInputStream(socket.getInputStream());
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            String username;
-            String password;
-
-
-            while (true) {
-                System.out.print(Constants.ENTER_USERNAME);
-                username = reader.readLine();
-
-                System.out.print(Constants.ENTER_PASSWORD);
-                password = reader.readLine();
-
-                // Send credentials
-                UserCredentials.BasicCredentials credentials = new UserCredentials.BasicCredentials(username, password);
-                output.writeObject(credentials);
-                logger.info(Constants.LOG_AUTH_ATTEMPT + username);
-
-                // Read server response
-                Object response = input.readObject();
-                if (Constants.OK.equals(response)) {
-                    logger.info(Constants.LOG_AUTH_SUCCESS + username);
-                    break;
-                } else if (Constants.AUTH_FAILED.equals(response)) {
-                    System.out.println(Constants.AUTH_FAILED);
-                    logger.warning(Constants.LOG_AUTH_FAIL + username);
-                } else if (Constants.USERNAME_TAKEN.equals(response)) {
-                    System.out.println(Constants.USERNAME_TAKEN);
-                    logger.warning(Constants.LOG_DUPLICATE_LOGIN + username);
-                }
-            }
-
-            while (true) {
-                logger.info(Constants.LOG_WAITING_OPPONENT);
-                System.out.println(Constants.WAITING_FOR_OPPONENT);
-                Object message = input.readObject();
-                System.out.println(message);
-                logger.info(Constants.LOG_RECEIVED_MESSAGE + message);
-
-                System.out.print(Constants.ENTER_MOVE);
-                Move move = Move.valueOf(reader.readLine().toUpperCase());
-                output.writeObject(move);
-                logger.info(Constants.LOG_MOVE_SENT + move);
-
-
-                GameResult result = (GameResult) input.readObject();
-                System.out.println(Constants.GAME_RESULT + result.getResult());
-                logger.info(Constants.LOG_GAME_RESULT + result.getResult());
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            logger.log(Level.SEVERE, Constants.LOG_CLIENT_ERROR, e);
-        } finally {
-            closeConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+//        try {
+//            socket = new Socket(serverAddress, port);
+//            output = new ObjectOutputStream(socket.getOutputStream());
+//            input = new ObjectInputStream(socket.getInputStream());
+//
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+//            String username;
+//            String password;
+//
+//
+//            while (true) {
+//                System.out.print(Constants.ENTER_USERNAME);
+//                username = reader.readLine();
+//
+//                System.out.print(Constants.ENTER_PASSWORD);
+//                password = reader.readLine();
+//
+//                // Send credentials
+//                UserCredentials.BasicCredentials credentials = new UserCredentials.BasicCredentials(username, password);
+//                output.writeObject(credentials);
+//                logger.info(Constants.LOG_AUTH_ATTEMPT + username);
+//
+//                // Read server response
+//                Object response = input.readObject();
+//                if (Constants.OK.equals(response)) {
+//                    logger.info(Constants.LOG_AUTH_SUCCESS + username);
+//                    break;
+//                } else if (Constants.AUTH_FAILED.equals(response)) {
+//                    System.out.println(Constants.AUTH_FAILED);
+//                    logger.warning(Constants.LOG_AUTH_FAIL + username);
+//                } else if (Constants.USERNAME_TAKEN.equals(response)) {
+//                    System.out.println(Constants.USERNAME_TAKEN);
+//                    logger.warning(Constants.LOG_DUPLICATE_LOGIN + username);
+//                }
+//            }
+//
+//            while (true) {
+//                logger.info(Constants.LOG_WAITING_OPPONENT);
+//                System.out.println(Constants.WAITING_FOR_OPPONENT);
+//                Object message = input.readObject();
+//                System.out.println(message);
+//                logger.info(Constants.LOG_RECEIVED_MESSAGE + message);
+//
+//                System.out.print(Constants.ENTER_MOVE);
+//                Move move = Move.valueOf(reader.readLine().toUpperCase());
+//                output.writeObject(move);
+//                logger.info(Constants.LOG_MOVE_SENT + move);
+//
+//
+//                GameResult result = (GameResult) input.readObject();
+//                System.out.println(Constants.GAME_RESULT + result.getResult());
+//                logger.info(Constants.LOG_GAME_RESULT + result.getResult());
+//            }
+//        } catch (IOException | ClassNotFoundException e) {
+//            logger.log(Level.SEVERE, Constants.LOG_CLIENT_ERROR, e);
+//        } finally {
+//            closeConnection();
+//        }
     }
 
     /**

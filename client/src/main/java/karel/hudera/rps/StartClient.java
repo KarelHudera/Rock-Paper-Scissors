@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import karel.hudera.rps.client.Client;
+import karel.hudera.rps.constants.Constants;
 import karel.hudera.rps.utils.Logging;
 
 import java.io.IOException;
@@ -25,10 +26,10 @@ public class StartClient extends Application {
 
     public static void main(String[] args) {
 
-        Logging.configureLogger(logger, "client.log");
+        Logging.configureLogger(logger, Constants.LOG_FILE_C);
 
-       // Client client = new Client(logger);
-       // client.initialize("localhost", 9090);
+        Client client = new Client(logger);
+        client.initialize("localhost", Constants.PORT);
 
         launch(); // This starts the JavaFX application
     }

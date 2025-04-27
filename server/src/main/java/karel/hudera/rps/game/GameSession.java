@@ -36,33 +36,33 @@ public class GameSession {
      * Starts the game session, notifying both players and handling the game logic.
      */
     public void start() {
-        logger.info(String.format(Constants.LOG_GAME_SESSION_STARTED, player1.username, player2.username));
+       // logger.info(String.format(Constants.LOG_GAME_SESSION_STARTED, player1.username, player2.username));
         new Thread(this::playGame).start();
     }
 
     private void playGame() {
         try {
-            player1.sendMessage(Constants.GAME_STARTED + player2.username);
-            player2.sendMessage(Constants.GAME_STARTED + player1.username);
+           // player1.sendMessage(Constants.GAME_STARTED + player2.username);
+           // player2.sendMessage(Constants.GAME_STARTED + player1.username);
 
-            Move move1 = (Move) player1.input.readObject();
-            Move move2 = (Move) player2.input.readObject();
+           // Move move1 = (Move) player1.input.readObject();
+           // Move move2 = (Move) player2.input.readObject();
 
-            String result = determineWinner(move1, move2);
-            GameResult gameResult = new GameResult(player1.username, move1.name(), player2.username, move2.name(), result);
+           // String result = determineWinner(move1, move2);
+            // GameResult gameResult = new GameResult(player1.username, move1.name(), player2.username, move2.name(), result);
 
-            player1.sendMessage(gameResult);
-            player2.sendMessage(gameResult);
+           // player1.sendMessage(gameResult);
+           // player2.sendMessage(gameResult);
 
-            logger.info(Constants.LOG_GAME_RESULT + gameResult);
+           // logger.info(Constants.LOG_GAME_RESULT + gameResult);
 
-        } catch (IOException | ClassNotFoundException e) {
-            logger.severe(Constants.LOG_GAME_ERROR + e.getMessage());
+       // } catch (IOException | ClassNotFoundException e) {
+          //  logger.severe(Constants.LOG_GAME_ERROR + e.getMessage());
         } finally {
             logger.info("HHHHHHHHHHHHHA");
             //logger.info(Constants.LOG_CLIENT_CLOSED);
-           // player1.closeResources();
-          //  player2.closeResources();
+            // player1.closeResources();
+            //  player2.closeResources();
         }
     }
 
@@ -80,8 +80,9 @@ public class GameSession {
         if ((move1 == Move.ROCK && move2 == Move.SCISSORS) ||
                 (move1 == Move.SCISSORS && move2 == Move.PAPER) ||
                 (move1 == Move.PAPER && move2 == Move.ROCK)) {
-            return player1.username + Constants.WINS;
+      //      return player1.username + Constants.WINS;
         }
-        return player2.username + Constants.WINS;
+       // return player2.username + Constants.WINS;
+        return Constants.DRAW;
     }
 }

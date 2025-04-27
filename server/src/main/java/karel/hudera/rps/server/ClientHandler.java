@@ -1,98 +1,96 @@
 package karel.hudera.rps.server;
 
-import static karel.hudera.rps.server.Server.isValidUser;
+import karel.hudera.rps.constants.Constants;
+import karel.hudera.rps.utils.ServerLogger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-import karel.hudera.rps.utils.UserCredentials;
-import karel.hudera.rps.constants.Constants;
-
-
 /**
- * Handles communication between the server and a connected client.
- * Each client runs in a separate thread.
+ * Handles communication between the server and a connected client in the Rock-Paper-Scissors game.
+ * Each client connection is managed in a separate thread to allow multiple concurrent connections.
+ * This class is responsible for:
+ * <ul>
+ *   <li>Establishing input/output streams with the client</li>
+ *   <li>Processing incoming client messages</li>
+ *   <li>Sending responses back to the client</li>
+ *   <li>Logging all client activity</li>
+ *   <li>Properly closing resources when the connection terminates</li>
+ * </ul>
  */
 public class ClientHandler implements Runnable {
 
-    /**
-     * Logger instance for logging client activity
-     */
-    private static Logger logger;
-    /**
-     * Socket instance representing the client's connection to the server
-     */
-    private final Socket socket;
+    private static final Logger logger = ServerLogger.INSTANCE;
+    private final Socket clientSocket;
+    private PrintWriter out;
+    private BufferedReader in;
 
     /**
-     * Input stream to read objects sent by the client
-     */
-    public ObjectInputStream input;
-
-    /**
-     * Output stream to send objects to the client
-     */
-    private ObjectOutputStream output;
-
-    /**
-     * The username of the connected client
-     */
-    public String username;
-
-    /**
-     * Constructs a new {@code ClientHandler} to manage communication with the connected client.
+     * Constructs a new ClientHandler to manage communication with a connected client.
      *
-     * @param socket The socket through which the client communicates with the server.
-     * @param logger The logger instance used for logging client activity.
+     * @param clientSocket The socket through which the client communicates with the server.
      */
-    public ClientHandler(Socket socket, Logger logger) {
-        this.socket = socket;
-        ClientHandler.logger = logger;
+    public ClientHandler(Socket clientSocket) {
+        this.clientSocket = clientSocket;
     }
 
     /**
-     * Runs the client handler in a separate thread.
-     * The method listens for incoming client messages, handles authentication,
-     * and starts a game session once the client is authenticated and ready.
+     * Executes the client handling logic in a separate thread.
+     * This method initializes streams, processes client messages, and handles connection closure.
+     * All activities are logged to both console and file according to the logging configuration.
      */
     @Override
     public void run() {
+        String clientAddress = clientSocket.getInetAddress().toString();
+        int clientPort = clientSocket.getPort();
+        logger.info(String.format(Constants.LOG_CLIENT_CONNECTED, clientAddress, clientPort));
+
         try {
-            output = new ObjectOutputStream(socket.getOutputStream());
-            input = new ObjectInputStream(socket.getInputStream());
+            // Initialize input and output streams
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-            while (true) {
-                Object received = input.readObject();
-                if (received instanceof UserCredentials.BasicCredentials credentials) {
-                    String username = credentials.username().trim();
-                    String password = credentials.password().trim();
+            // Send welcome message
+            out.println(Constants.WELCOME_MESSAGE);
+            logger.info(String.format(Constants.LOG_WELCOME_SENT, clientAddress, clientPort));
 
-                    if (Server.isUserLoggedIn(username)) {
-                        output.writeObject(Constants.USERNAME_TAKEN);
-                        logger.warning(Constants.LOG_DUPLICATE_LOGIN + username);
-                        continue;
-                    }
+            // Process client messages
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                logger.info(String.format(Constants.LOG_RECEIVED_FROM_CLIENT, clientAddress, clientPort, inputLine));
 
-                    if (isValidUser(username, password)) {
-                        Server.addUser(username);
-                        output.writeObject(Constants.OK);
-                        logger.info(Constants.LOG_AUTH_SUCCESS + username);
-                        this.username = username;
-                        break;
-                    } else {
-                        output.writeObject(Constants.AUTH_FAILED);
-                        logger.warning(Constants.LOG_AUTH_FAIL + username);
-                    }
-                }
+                // Echo the message back to client
+                String outputLine = Constants.SERVER_ECHO + inputLine;
+                out.println(outputLine);
+                logger.info(String.format(Constants.LOG_SENT_TO_CLIENT, clientAddress, clientPort, outputLine));
             }
-
-            logger.info(String.format(Constants.LOG_CLIENT_CONNECTED, username));
-            Server.addWaitingPlayer(this);
-        } catch (IOException | ClassNotFoundException e) {
-            logger.severe(Constants.LOG_CLIENT_ERROR + e.getMessage());
+        } catch (IOException e) {
+            logger.warning(String.format(Constants.ERROR_CLIENT_COMMUNICATION, clientAddress, clientPort, e.getMessage()));
         } finally {
-           // Server.removeUser(username);
+            closeConnection(clientAddress, clientPort);
+        }
+    }
+
+    /**
+     * Closes all resources associated with this client connection.
+     *
+     * @param clientAddress The client's IP address
+     * @param clientPort    The client's port number
+     */
+    private void closeConnection(String clientAddress, int clientPort) {
+        try {
+            // Close resources
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (clientSocket != null) clientSocket.close();
+
+            logger.info(String.format(Constants.LOG_CLIENT_DISCONNECTED, clientAddress, clientPort));
+        } catch (IOException e) {
+            logger.severe(String.format(Constants.ERROR_CLOSING_CONNECTION, clientAddress, clientPort, e.getMessage()));
         }
     }
 
@@ -100,30 +98,15 @@ public class ClientHandler implements Runnable {
      * Sends a message to the client.
      *
      * @param message The message to send to the client.
-     * @throws IOException If an I/O error occurs while sending the message.
+     * @return true if the message was sent successfully, false otherwise
      */
-    public void sendMessage(Object message) throws IOException {
-        output.writeObject(message);
-        logger.info(Constants.LOG_MOVE_SENT + message);
-    }
-
-    /**
-     * Closes the input and output streams and the client socket to clean up resources.
-     */
-    public void closeResources() {
-        try {
-            if (input != null) {
-                input.close();
-            }
-            if (output != null) {
-                output.close();
-            }
-            if (socket != null) {
-                socket.close();
-            }
-            logger.info(Constants.LOG_CLIENT_CLOSED + username);
-        } catch (IOException e) {
-            logger.severe(Constants.LOG_CLIENT_CLOSE_ERROR + e.getMessage());
+    public boolean sendMessage(String message) {
+        if (out != null && !clientSocket.isClosed()) {
+            out.println(message);
+            logger.info(String.format(Constants.LOG_SENT_TO_CLIENT,
+                    clientSocket.getInetAddress(), clientSocket.getPort(), message));
+            return true;
         }
+        return false;
     }
 }
