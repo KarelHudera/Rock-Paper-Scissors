@@ -10,14 +10,18 @@ import java.util.logging.Logger;
  */
 public class ServerLogger {
 
+    // Singleton instance of the logger
     public static final Logger INSTANCE;
 
+    // Static block to initialize the logger
     static {
+        // Get the logger and configure it
         INSTANCE = Logger.getLogger("ServerLogger");
         Logging.configureLogger(INSTANCE, Constants.LOG_FILE_S);
     }
 
+    // Private constructor to prevent instantiation
     private ServerLogger() {
-        // Private constructor to prevent instantiation
+        // Empty because I don't want instances to be created
     }
 }
