@@ -4,7 +4,7 @@
 <?import javafx.scene.text.Text?>
 
 <VBox alignment="CENTER" spacing="10" stylesheets="@styles.css"
-      xmlns:fx="http://javafx.com/fxml" fx:controller="karel.hudera.rps.GameController">
+      xmlns:fx="http://javafx.com/fxml">
 
     <Label fx:id="statusMessageLabel" text="Waiting for game to start..." styleClass="status-label"/>
     <Label fx:id="opponentLabel" text="Opponent: N/A" styleClass="info-label"/>

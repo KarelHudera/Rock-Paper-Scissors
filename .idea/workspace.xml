@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="fix: using only ObjectInputStream ObjectOutputStream">
-      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/GameAction.java" afterDir="false" />
+    <list default="true" id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="feat: Login with only username">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/constants/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/constants/Constants.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +32,7 @@
   "keyToString": {
     "Application.StartClient.executor": "Run",
     "Application.StartServer.executor": "Run",
+    "Application.client.executor": "Run",
     "git-widget-placeholder": "server-feat",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -43,6 +40,17 @@
     "node.js.selected.package.tslint": "(autodetect)"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="client" type="Application" factoryName="Application" singleton="false">
+      <option name="ALTERNATIVE_JRE_PATH" value="23" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="karel.hudera.rps.StartClient" />
+      <module name="client" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="TaskManager">
     <task id="LOCAL-00001" summary="feat: protocol for login">
       <option name="closed" value="true" />
@@ -60,12 +68,21 @@
       <option name="project" value="LOCAL" />
       <updated>1749324935813</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: Login with only username">
+      <option name="closed" value="true" />
+      <created>1749327122693</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1749327122693</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: protocol for login" />
     <MESSAGE value="fix: using only ObjectInputStream ObjectOutputStream" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: using only ObjectInputStream ObjectOutputStream" />
+    <MESSAGE value="feat: Login with only username" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: Login with only username" />
   </component>
 </project>
