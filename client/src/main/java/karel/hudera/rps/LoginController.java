@@ -25,17 +25,21 @@ public class LoginController {
     private PasswordField passwordField;
 
     @FXML
-    private Label errorLabel, successLabel;
+    private Label errorLabel, successLabel; // Labels to display error and success messages
 
     @FXML
-    private StackPane errorBox, successBox, messageContainer;
+    private StackPane errorBox, successBox, messageContainer; // Containers for error and success messages, and a general message container
 
     @FXML
     private Button loginButton;
-    private Client gameClient;
+    private Client gameClient; // Client instance for communicating with the game server
 
     private static final Logger logger = Logger.getLogger("ClientLogger");
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Sets up listeners to hide messages when input fields are typed into and initializes the game client.
+     */
     @FXML
     private void initialize() {
         // Hide messages dynamically when typing
@@ -46,6 +50,11 @@ public class LoginController {
         messageContainer.setVisible(false);
         gameClient = new Client(logger);
     }
+
+    /**
+     * Handles the action when the login button is clicked.
+     * Validates input, disables the login button, and initiates an asynchronous authentication task.
+     */
     @FXML
     private void onLoginButtonClick() {
         String username = usernameField.getText().trim();
@@ -76,6 +85,7 @@ public class LoginController {
             }
         };
 
+        // Set the callback for when the login task succeeds
         loginTask.setOnSucceeded(event -> {
             // Tato část se spustí na JavaFX Application Thread
             loginButton.setDisable(false); // Povolíme tlačítko zpět
@@ -88,6 +98,7 @@ public class LoginController {
             }
         });
 
+        // Set the callback for when the login task fails with an exception
         loginTask.setOnFailed(event -> {
             // Tato část se spustí na JavaFX Application Thread, pokud Task selže s výjimkou
             loginButton.setDisable(false); // Povolíme tlačítko zpět
@@ -102,6 +113,7 @@ public class LoginController {
                 // Tato zpráva se aktualizuje z call() metody, pokud je nastavena
                 // (pro naši implementaci loginu ji možná nebudeme přímo používat,
                 // ale je to dobrý vzor pro složitější Tasks)
+                //TODO asi smazat
             }
         });
 
@@ -109,12 +121,19 @@ public class LoginController {
         new Thread(loginTask).start();
     }
 
+    /**
+     * Initiates a short delay before navigating to the game screen, providing a smoother transition.
+     */
     private void proceedToGameScreen() {
         PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
         delay.setOnFinished(event -> navigateToGameScreen());
         delay.play();
     }
 
+    /**
+     * Loads the game view FXML and displays it, replacing the login view.
+     * Passes the game client instance to the new game controller.
+     */
     private void navigateToGameScreen() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("game-view.fxml"));
@@ -135,7 +154,15 @@ public class LoginController {
         }
     }
 
-    // Metody pro zobrazení a skrytí zpráv
+    /**
+     * Displays a message in the specified message box and label, with a fade-in animation.
+     * Hides other message boxes before displaying the new one.
+     *
+     * @param box The StackPane container for the message (e.g., errorBox, successBox).
+     * @param label The Label inside the box to display the message text.
+     * @param message The text message to display.
+     */
+    // Zobrazení a skrytí zpráv
     private void showMessage(StackPane box, Label label, String message) {
         // Skrýt všechny zprávy nejprve
         errorBox.setVisible(false);
@@ -148,12 +175,20 @@ public class LoginController {
         fadeIn(box);
     }
 
+    /**
+     * Hides all message boxes (error and success) and the general message container.
+     */
     private void hideMessages() {
         messageContainer.setVisible(false);
         errorBox.setVisible(false);
         successBox.setVisible(false);
     }
 
+    /**
+     * Applies a fade-in animation to the given StackPane.
+     *
+     * @param box The StackPane to apply the fade-in effect to.
+     */
     private void fadeIn(StackPane box) { // Změněno z Label na StackPane
         box.setOpacity(0); // Začínáme s plně průhledným
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), box);

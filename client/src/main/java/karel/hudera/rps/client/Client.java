@@ -94,31 +94,6 @@ public class Client {
     }
 
 
-    /**
-     * Closes the client connection and releases resources.
-     * <p>
-     * Ensures the socket is properly closed to avoid resource leaks.
-     * </p>
-     */
-    /**
-    private void closeConnection() {
-        try {
-            if (socket != null) {
-                socket.close();
-            }
-            if (input != null) {
-                input.close();
-            }
-            if (output != null) {
-                output.close();
-            }
-            logger.info(Constants.LOG_CLIENT_CLOSED);
-
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR, e.getMessage());
-        }
-    }**/
-
     public boolean authenticate(String username, String password) {
         try {
             connect(); // Zajistíme, že jsme připojeni k serveru

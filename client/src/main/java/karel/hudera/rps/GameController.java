@@ -58,6 +58,10 @@ public class GameController {
         logger.info("GameController initialized for user: " + gameClient.getLoggedInUsername());
     }
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Sets initial UI visibility and starts the thread for listening to server messages.
+     */
     @FXML
     private void initialize() {
         loadingPane.setVisible(false);
@@ -82,6 +86,12 @@ public class GameController {
         executorService = Executors.newSingleThreadExecutor();
         executorService.submit(this::listenForServerMessages);
     }
+
+    /**
+     * Listens for incoming messages from the server in a separate thread.
+     * It continuously reads messages and dispatches them to the UI thread for handling.
+     * Handles potential I/O errors and connection loss.
+     */
     private void listenForServerMessages() {
         try {
             while (true) {
@@ -112,6 +122,12 @@ public class GameController {
         }
     }
 
+    /**
+     * Handles incoming GameState objects from the server, updating the UI accordingly.
+     * This method is always called on the JavaFX Application Thread.
+     *
+     * @param gameState The GameState object received from the server.
+     */
     private void handleGameState(GameState gameState) {
         statusMessageLabel.setText(gameState.getMessage()); // Zobrazí hlavní zprávu ze serveru
         appendToGameLog("Server: " + gameState.getMessage());
@@ -137,7 +153,7 @@ public class GameController {
             scoreLabel.setText("Score: " + myScore + " - " + opponentScore);
         }
 
-
+        // Handle UI changes based on the current game status
         switch (gameState.getStatus()) {
             case WAITING_FOR_PLAYERS:
                 loadingPane.setVisible(true); // Ukazujeme loading
@@ -190,12 +206,23 @@ public class GameController {
     }
 
 
+    /**
+     * Enables or disables the Rock, Paper, Scissors choice buttons.
+     *
+     * @param enable true to enable buttons, false to disable them.
+     */
     private void setMoveButtonsEnabled(boolean enable) {
         rockButton.setDisable(!enable);
         paperButton.setDisable(!enable);
         scissorsButton.setDisable(!enable);
     }
 
+    /**
+     * Appends a message to the game log text area.
+     * Ensures UI update is performed on the JavaFX Application Thread.
+     *
+     * @param message The message to append.
+     */
     private void appendToGameLog(String message) {
         // Použijte Platform.runLater, protože UI aktualizace musí probíhat na JavaFX Application Thread
         if (gameLogArea != null) {
@@ -203,9 +230,11 @@ public class GameController {
         }
     }
 
-    // Odstraněny metody onOpponentConnected() a onMovePlayed() - logika je nyní v handleGameState
-    // Tyto metody byly zbytečné, protože stav hry řídí server přes GameState
-
+    /**
+     * Handles the event when the Rock button is clicked.
+     * Sends the player's "ROCK" choice to the server.
+     */
+    //TODO opravit controller v game-view.fxml definovat ho v fxml file ne tady
     @FXML
     private void onRockClick() {
         sendPlayerChoice(Move.ROCK);
@@ -221,6 +250,12 @@ public class GameController {
         sendPlayerChoice(Move.SCISSORS);
     }
 
+    /**
+     * Sends the player's chosen move to the server.
+     * Updates the UI to reflect the sent move and disables further choices.
+     *
+     * @param choice The player's chosen move (ROCK, PAPER, or SCISSORS).
+     */
     private void sendPlayerChoice(Move choice) {
         logger.info("Player chose: " + choice.name());
         selectedMoveText.setText("You chose: " + choice.name()); // Aktualizuje text zobrazeného tahu
@@ -273,47 +308,4 @@ public class GameController {
         }
     }
 
-
-    /**
-    public void onOpponentConnected() {
-        // Hide loading screen, show buttons
-        loadingPane.setVisible(false);
-        buttonsPane.setVisible(true);
-    }
-
-    public void onMovePlayed() {
-        // Disable buttons, show move played screen
-        rockButton.setDisable(true);
-        paperButton.setDisable(true);
-        scissorsButton.setDisable(true);
-        movePlayedPane.setVisible(true);
-    }
-
-    @FXML
-    private void onRockClick() {
-        handleMove("ROCK");
-    }
-
-    @FXML
-    private void onPaperClick() {
-        handleMove("PAPER");
-    }
-
-    @FXML
-    private void onScissorsClick() {
-        handleMove("SCISSORS");
-    }
-
-    private void handleMove(String move) {
-        logger.info("Player chose: " + move);
-
-        // Display the selected move
-        selectedMoveText.setText("You chose: " + move);
-
-        // Hide buttons, show move played screen
-        buttonsPane.setVisible(false);
-        movePlayedPane.setVisible(true);
-        // TODO: Send move to server and get the result
-    }
-    **/
 }
