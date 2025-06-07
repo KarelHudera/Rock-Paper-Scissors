@@ -1,4 +1,7 @@
 package karel.hudera.rps.game;
+/**
+ * Odpověď serveru na LoginResponse
+ * **/
 
 public class LoginResponse extends GameMessage {
     private static final long serialVersionUID = 3L; // Unikátní serialVersionUID

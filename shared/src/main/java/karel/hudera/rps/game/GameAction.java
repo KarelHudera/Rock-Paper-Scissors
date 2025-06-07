@@ -1,5 +1,8 @@
 package karel.hudera.rps.game;
 
+/**
+ * Klient posílá serveru zvolený Enum z Move
+ * **/
 public class GameAction extends GameMessage {
     private static final long serialVersionUID = 2L; // Unikátní serialVersionUID
 

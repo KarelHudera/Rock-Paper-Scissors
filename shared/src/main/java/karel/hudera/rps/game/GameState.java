@@ -1,5 +1,8 @@
 package karel.hudera.rps.game;
 
+/**
+ * Posílá server klientům při čekání na hru a v průběhu hry
+ * **/
 public class GameState extends GameMessage{
     private static final long serialVersionUID = 4L; // Unikátní serialVersionUID
 
