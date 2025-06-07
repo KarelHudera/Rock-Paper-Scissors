@@ -39,6 +39,14 @@ public final class Constants {
     public static final String WAITING_FOR_GAME_START = "Waiting for game start.";
     public static final String MAKE_YOUR_MOVE = "Make your move.";
     public static final String WAITING_FOR_OPPONENT_MOVE = "Waiting for opponents move.";
+    public static final String LOG_GAME_SESSION_CREATED = "Log session created.";
+    public static final String WINS_GAME = "Wins game";
+    public static final String GAME_DRAW = "Game draw.";
+    public static final String WINS_ROUND = "Wins round.";
+    public static final String GAME_INTERRUPTED = "Game interrupted.";
+
+
+
 
     // Logging messages
     public static final String LOG_GAME_SESSION_STARTED = "🎮 Starting game between %s and %s";

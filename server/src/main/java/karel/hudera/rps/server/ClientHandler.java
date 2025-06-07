@@ -1,10 +1,7 @@
 package karel.hudera.rps.server;
 
 import karel.hudera.rps.constants.Constants;
-import karel.hudera.rps.game.GameAction;
-import karel.hudera.rps.game.GameState;
-import karel.hudera.rps.game.LoginRequest;
-import karel.hudera.rps.game.LoginResponse;
+import karel.hudera.rps.game.*;
 import karel.hudera.rps.utils.ServerLogger;
 
 import java.io.*;
@@ -201,6 +198,21 @@ public class ClientHandler implements Runnable {
     }
 
     /**
+     * Sends a serializable object to the client.
+     * @param message The object to send to the client.
+     * @throws IOException If an I/O error occurs.
+     */
+    public void sendMessage(Object message) throws IOException {
+        if (output != null) {
+            output.writeObject(message);
+            output.flush();
+            logger.info(String.format(Constants.LOG_SENT_TO_CLIENT, clientAddress, clientPort, message.getClass().getSimpleName()));
+        } else {
+            logger.warning("Attempted to send message but output stream is null for client " + clientAddress + ":" + clientPort);
+        }
+    }
+
+    /**
      * Sends a message to the client.
      *
      * @param message The message to send to the client.
@@ -224,4 +236,7 @@ public class ClientHandler implements Runnable {
         return username;
     }
 
+    public void setGameSession(GameSession gameSession) {
+        //TODO
+    }
 }

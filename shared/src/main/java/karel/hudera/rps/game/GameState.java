@@ -71,6 +71,7 @@ public class GameState extends GameMessage{
         return this;
     }
 
+
     // Gettery pro přístup k datům ze zprávy
     public GameStatus getStatus() {
         return status;
