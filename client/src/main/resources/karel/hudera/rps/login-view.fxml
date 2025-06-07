@@ -15,7 +15,7 @@
 
     <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250" styleClass="login-input"/>
 
-    <Button text="Login" onAction="#onLoginButtonClick" maxWidth="250" styleClass="login-button"/>
+    <Button text="Login" onAction="#onLoginButtonClick" maxWidth="250" styleClass="login-button" fx:id="loginButton"/>
 
     <!-- Message Container (Ensures only one message is visible) -->
     <StackPane fx:id="messageContainer" maxWidth="250" styleClass="login-message-container">

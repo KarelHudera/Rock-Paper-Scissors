@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import karel.hudera.rps.client.Client;
 
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ public class GameController {
 
     private static final Logger logger = Logger.getLogger("GameLogger");
 
+    private final Client gameClient;
     @FXML
     private StackPane loadingPane;
 
@@ -26,6 +28,12 @@ public class GameController {
 
     @FXML
     private Text selectedMoveText;
+
+
+    public GameController(Client client) {
+        this.gameClient = client;
+        logger.info("GameController initialized for user: " + gameClient.getLoggedInUsername());
+    }
 
     @FXML
     private void initialize() {
