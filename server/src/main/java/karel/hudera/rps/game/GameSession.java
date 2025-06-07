@@ -21,7 +21,7 @@ public class GameSession implements Runnable {
     /**
      * Logger instance for logging server activity
      */
-    private static final Logger logger = Logger.getLogger("GameSessionLogger"); // Vlastní logger pro GameSession
+    private static final Logger logger = Logger.getLogger("GameSessionLogger");
     private final String sessionId; // Unikátní ID pro každou hru
     private final ClientHandler player1;
     private final ClientHandler player2;
@@ -130,6 +130,14 @@ public class GameSession implements Runnable {
         }
     }
 
+    /**
+     * Determines the winner of a single round based on the moves made by two players.
+     * Updates player scores accordingly.
+     *
+     * @param move1 The move made by player 1.
+     * @param move2 The move made by player 2.
+     * @return A message describing the outcome of the round.
+     */
     private String determineWinner(Move move1, Move move2) {
         String resultMsg;
         String winner = "DRAW";
@@ -152,6 +160,11 @@ public class GameSession implements Runnable {
         return resultMsg;
     }
 
+    /**
+     * Checks if the game has reached its end condition.
+     *
+     * @return true if the game is over, false otherwise.
+     */
     private boolean checkGameOver() {
         // Implementujte logiku konce hry, např. kdo dosáhl 3 bodů
         int maxScore = 3; // Příklad
@@ -161,6 +174,9 @@ public class GameSession implements Runnable {
         return false;
     }
 
+    /**
+     * Sends the final game over state to both players, announcing the game's ultimate winner or a draw.
+     */
     private void sendGameOverState() {
         String finalMessage;
         if (player1Score > player2Score) {
@@ -186,6 +202,12 @@ public class GameSession implements Runnable {
         }
     }
 
+    /**
+     * Sends the round result state to both players, including their choices, opponent's choices,
+     * current scores, and a message describing the round's outcome.
+     *
+     * @param message The message describing the outcome of the round.
+     */
     private void sendRoundResultState(String message) {
         // Stav pro hráče 1
         GameState p1State = new GameState(GameState.GameStatus.ROUND_ENDED, message);
@@ -211,6 +233,12 @@ public class GameSession implements Runnable {
         }
     }
 
+    /**
+     * Sends a general GameState to both players, including the current game status and a message.
+     *
+     * @param status The current status of the game (e.g., ROUND_STARTED, GAME_OVER).
+     * @param message The message to send along with the state.
+     */
     private void sendGameStateToAll(GameState.GameStatus status, String message) {
         GameState state = new GameState(status, message);
         state.setPlayerIds(player1.getUsername(), player2.getUsername());
@@ -224,7 +252,12 @@ public class GameSession implements Runnable {
         }
     }
 
+    /**
+     * Performs cleanup actions after the game session ends (either normally or due to interruption).
+     * This method can be extended to disconnect clients, return them to a lobby, etc.
+     */
     private void cleanupGame() {
+        //TODO
         // Po skončení hry (nebo přerušení) můžete klienty buď odpojit,
         // nebo je vrátit do lobby čekající na novou hru.
         // Zde můžete volat gameManager.unregisterPlayer(player1), gameManager.unregisterPlayer(player2)

@@ -54,34 +54,14 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
+            //Used ObjectInput/OutputStream for better manipulation with serialized objects
             output = new ObjectOutputStream(clientSocket.getOutputStream());
             input = new ObjectInputStream(clientSocket.getInputStream());
 
-            /**
-            // Send welcome message
-            out.println(Constants.WELCOME_MESSAGE);
-            logger.info(String.format(Constants.LOG_WELCOME_SENT, clientAddress, clientPort));
-
-            // Process client messages
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                logger.info(String.format(Constants.LOG_RECEIVED_FROM_CLIENT, clientAddress, clientPort, inputLine));
-
-                // Echo the message back to client
-                String outputLine = Constants.SERVER_ECHO + inputLine;
-                out.println(outputLine);
-                logger.info(String.format(Constants.LOG_SENT_TO_CLIENT, clientAddress, clientPort, outputLine));
-            }
-        } catch (IOException e) {
-            logger.warning(String.format(Constants.ERROR_CLIENT_COMMUNICATION, clientAddress, clientPort, e.getMessage()));
-        } finally {
-            closeConnection(clientAddress, clientPort);
-        }**/
             GameState welcomeState = new GameState(GameState.GameStatus.WAITING_FOR_PLAYERS, Constants.WELCOME_MESSAGE);
             output.writeObject(welcomeState);
             output.flush(); // Důležité: Vždy po odeslání objektu stream vyprázdněte (flush)!
             logger.info(String.format(Constants.LOG_WELCOME_SENT, clientAddress, clientPort));
-
 
             boolean authenticated = handleAuthentication();
 
@@ -91,7 +71,6 @@ public class ClientHandler implements Runnable {
                 // Po úspěšné autentizaci server čeká na herní akce (GameAction) od klienta
                 // a posílá mu zpět aktuální stav hry (GameState).
 
-                // Příklad základní herní smyčky (pro demonstraci komunikace):
                 while (true) {
                     // Přečte obecný GameMessage objekt (může to být GameAction atd.)
                     Object receivedObject = input.readObject();
@@ -108,7 +87,6 @@ public class ClientHandler implements Runnable {
                     } else if (receivedObject instanceof LoginRequest) {
                         // Toto by se nemělo dít po autentizaci, ale je dobré to ošetřit
                         logger.warning("Received LoginRequest after authentication from " + clientAddress + ":" + clientPort);
-                        // Můžete odeslat chybovou odpověď nebo ignorovat
                     } else {
                         logger.warning("Received unexpected object type: " + receivedObject.getClass().getName());
                     }
@@ -133,6 +111,14 @@ public class ClientHandler implements Runnable {
 
     }
 
+    /**
+     * Handles the authentication process for the client.
+     * It expects a LoginRequest object from the client and responds with a LoginResponse.
+     *
+     * @return true if authentication is successful, false otherwise.
+     * @throws IOException If an I/O error occurs during communication.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be found.
+     */
     private boolean handleAuthentication() throws IOException, ClassNotFoundException {
         Object receivedObject = input.readObject(); // Čeká na objekt LoginRequest
         logger.info(String.format(Constants.LOG_RECEIVED_FROM_CLIENT, clientAddress, clientPort, receivedObject.getClass().getSimpleName()));
@@ -143,6 +129,7 @@ public class ClientHandler implements Runnable {
 
             logger.info(Constants.LOG_AUTH_ATTEMPT + username);
 
+            //TODO
             // Zde by měla být skutečná logika autentizace (ověření uživatelského jména a hesla)
             // a kontrola, zda uživatel není již přihlášen.
             // Pro jednoduchost: akceptujeme jakékoli neprázdné uživatelské jméno
@@ -178,16 +165,6 @@ public class ClientHandler implements Runnable {
      * @param clientPort    The client's port number
      */
     private void closeConnection(String clientAddress, int clientPort) {
-        /**try {
-            // Close resources
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (clientSocket != null) clientSocket.close();
-
-            logger.info(String.format(Constants.LOG_CLIENT_DISCONNECTED, clientAddress, clientPort));
-        } catch (IOException e) {
-            logger.severe(String.format(Constants.ERROR_CLOSING_CONNECTION, clientAddress, clientPort, e.getMessage()));
-        }**/
         try {
             if (output != null) output.close();
             if (input != null) input.close();
@@ -213,29 +190,20 @@ public class ClientHandler implements Runnable {
     }
 
     /**
-     * Sends a message to the client.
+     * Retrieves the username of the authenticated client.
      *
-     * @param message The message to send to the client.
-     * @return true if the message was sent successfully, false otherwise
+     * @return The username of the client.
      */
-    /**
-     No more in use due to object serialization usage
-    public boolean sendMessage(String message) {
-        if (out != null && !clientSocket.isClosed()) {
-            out.println(message);
-            logger.info(String.format(Constants.LOG_SENT_TO_CLIENT,
-                    clientSocket.getInetAddress(), clientSocket.getPort(), message));
-            return true;
-        }
-        return false;
-    }
-
-     **/
-
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Sets the GameSession for this client handler.
+     * This method is a placeholder and needs to be implemented.
+     *
+     * @param gameSession The GameSession object to associate with this client.
+     */
     public void setGameSession(GameSession gameSession) {
         //TODO
     }
