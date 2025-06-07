@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<VBox alignment="CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="karel.hudera.rps.LoginController"
+      stylesheets="@styles.css">
+
+    <TextField fx:id="usernameField" promptText="Username" maxWidth="250" styleClass="login-input"/>
+
+    <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250" styleClass="login-input"/>
+
+    <Button text="Login" onAction="#onLoginButtonClick" maxWidth="250" styleClass="login-button" fx:id="loginButton"/>
+
+    <!-- Message Container (Ensures only one message is visible) -->
+    <StackPane fx:id="messageContainer" maxWidth="250" styleClass="login-message-container">
+
+        <StackPane fx:id="errorBox" visible="false" styleClass="login-error-box">
+            <Label fx:id="errorLabel" styleClass="login-error-text"/>
+        </StackPane>
+
+        <StackPane fx:id="successBox" visible="false" styleClass="login-success-box">
+            <Label fx:id="successLabel" styleClass="login-success-text"/>
+        </StackPane>
+
+    </StackPane>
+
+</VBox>

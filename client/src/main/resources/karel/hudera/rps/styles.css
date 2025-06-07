@@ -1,0 +1,59 @@
+.root {
+    -fx-background-color: linear-gradient(to right, #00AFFF, #0055AA);
+}
+
+/* Centered Input Fields */
+.login-input {
+    -fx-font-size: 14px;
+    -fx-padding: 8px;
+    -fx-background-radius: 10px;
+    -fx-border-color: gray;
+    -fx-border-radius: 10px;
+}
+
+/* Styled Login Button */
+.login-button {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px;
+}
+
+/* Message Container */
+.login-message-container {
+    -fx-alignment: center;
+    -fx-padding: 10px;
+    -fx-min-height: 30px;
+}
+
+/* Generic Message Box */
+.login-error-box, .login-success-box {
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-padding: 8px;
+    -fx-background-radius: 10px;
+}
+
+/* Error Styling */
+.login-error-box {
+    -fx-border-color: red;
+    -fx-background-color: #FFDDDD;
+}
+
+.login-error-text {
+    -fx-text-fill: red;
+    -fx-font-size: 12px;
+}
+
+/* Success Styling */
+.login-success-box {
+    -fx-border-color: green;
+    -fx-background-color: #DDFFDD;
+}
+
+.login-success-text {
+    -fx-text-fill: green;
+    -fx-font-size: 12px;
+}

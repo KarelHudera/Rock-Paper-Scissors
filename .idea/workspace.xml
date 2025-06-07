@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a91b8b99-cda5-4337-a6db-7cc7f7f05e8b" name="Changes" comment="feat: thread management">
-      <change beforePath="$PROJECT_DIR$/client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/client/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/server/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/shared/pom.xml" afterDir="false" />
+    <list default="true" id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="feat: comments in server">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/LoginController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,177 +22,104 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <excluded-from-favorite>
-      <branch-storage>
-        <map>
-          <entry type="REMOTE">
-            <value>
-              <list>
-                <branch-info repo="$PROJECT_DIR$" source="origin/main" />
-              </list>
-            </value>
-          </entry>
-        </map>
-      </branch-storage>
-    </excluded-from-favorite>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="server" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;KarelHudera&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/KarelHudera/Rock-Paper-Scissors.git&quot;,
-    &quot;accountId&quot;: &quot;6d5ea836-6d4f-4985-99e3-c7a2971528cb&quot;
-  }
-}</component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "d4acbec7",
-  "associatedIndex": 2
-}]]></component>
-  <component name="ProjectId" id="2tMPLMeSBU6vbeL1BAsOXPyoqjI" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showLibraryContents" value="true" />
-  </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.Client.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.Server.executor": "Run",
-    "JAR Application.client-1.0-SNAPSHOT.jar.executor": "Run",
-    "JAR Application.client-1.0.0-SNAPSHOT.jar.executor": "Run",
-    "JAR Application.original-client-1.0.0-SNAPSHOT.jar.executor": "Run",
-    "JAR Application.shared-1.0.0-SNAPSHOT.jar.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "develop",
-    "kotlin-language-version-configured": "true",
+    "Application.StartClient.executor": "Run",
+    "Application.StartServer.executor": "Run",
+    "Application.client.executor": "Run",
+    "git-widget-placeholder": "server-feat",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+    "node.js.selected.package.tslint": "(autodetect)"
   }
 }]]></component>
-  <component name="RunManager" selected="Application.Client">
-    <configuration name="Client" type="Application" factoryName="Application" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="karel.hudera.rps.Client" />
-      <module name="Client" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="karel.hudera.rps.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
+  <component name="RunManager">
+    <configuration name="client" type="Application" factoryName="Application" singleton="false">
+      <option name="ALTERNATIVE_JRE_PATH" value="23" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="karel.hudera.rps.StartClient" />
+      <module name="client" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="karel.hudera.rps.Server" />
-      <module name="Server" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="karel.hudera.rps.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="client-1.0-SNAPSHOT.jar" type="JarApplication" temporary="true">
-      <option name="JAR_PATH" value="$PROJECT_DIR$/client/target/client-1.0-SNAPSHOT.jar" />
-      <method v="2" />
-    </configuration>
-    <configuration name="client-1.0.0-SNAPSHOT.jar" type="JarApplication" temporary="true">
-      <option name="JAR_PATH" value="$PROJECT_DIR$/client/target/client-1.0.0-SNAPSHOT.jar" />
-      <method v="2" />
-    </configuration>
-    <configuration name="original-client-1.0.0-SNAPSHOT.jar" type="JarApplication" temporary="true">
-      <option name="JAR_PATH" value="$PROJECT_DIR$/client/target/original-client-1.0.0-SNAPSHOT.jar" />
-      <method v="2" />
-    </configuration>
-    <configuration name="shared-1.0.0-SNAPSHOT.jar" type="JarApplication" temporary="true">
-      <option name="JAR_PATH" value="$PROJECT_DIR$/shared/target/shared-1.0.0-SNAPSHOT.jar" />
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Application.Server" />
-        <item itemvalue="JAR Application.client-1.0.0-SNAPSHOT.jar" />
-        <item itemvalue="JAR Application.original-client-1.0.0-SNAPSHOT.jar" />
-        <item itemvalue="JAR Application.shared-1.0.0-SNAPSHOT.jar" />
-        <item itemvalue="JAR Application.client-1.0-SNAPSHOT.jar" />
-      </list>
-    </recent_temporary>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
-        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
-      </set>
-    </attachedChunks>
-  </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="a91b8b99-cda5-4337-a6db-7cc7f7f05e8b" name="Changes" comment="" />
-      <created>1740158913699</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1740158913699</updated>
-      <workItem from="1740158914797" duration="21000" />
-      <workItem from="1740158936868" duration="15569000" />
-    </task>
-    <task id="LOCAL-00001" summary="fix: shared module">
+    <task id="LOCAL-00001" summary="feat: protocol for login">
       <option name="closed" value="true" />
-      <created>1740159867841</created>
+      <created>1749324876223</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1740159867841</updated>
+      <updated>1749324876223</updated>
     </task>
-    <task id="LOCAL-00002" summary="feat: thread management">
+    <task id="LOCAL-00002" summary="fix: using only ObjectInputStream ObjectOutputStream">
       <option name="closed" value="true" />
-      <created>1740168369700</created>
+      <created>1749324935813</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1740168369700</updated>
+      <updated>1749324935813</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: Login with only username">
+      <option name="closed" value="true" />
+      <created>1749327122693</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1749327122693</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat: User starts waiting for another player">
+      <option name="closed" value="true" />
+      <created>1749327659367</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1749327659367</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix: server pairing players">
+      <option name="closed" value="true" />
+      <created>1749329592018</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1749329592018</updated>
+    </task>
+    <task id="LOCAL-00006" summary="feat: comments in protocol classes">
+      <option name="closed" value="true" />
+      <created>1749330284030</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1749330284030</updated>
+    </task>
+    <task id="LOCAL-00007" summary="feat: comments in server">
+      <option name="closed" value="true" />
+      <created>1749331229828</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1749331229828</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix: shared module" />
-    <MESSAGE value="feat: thread management" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: thread management" />
+    <MESSAGE value="feat: protocol for login" />
+    <MESSAGE value="fix: using only ObjectInputStream ObjectOutputStream" />
+    <MESSAGE value="feat: Login with only username" />
+    <MESSAGE value="feat: User starts waiting for another player" />
+    <MESSAGE value="fix: server pairing players" />
+    <MESSAGE value="feat: comments in protocol classes" />
+    <MESSAGE value="feat: comments in server" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: comments in server" />
   </component>
 </project>

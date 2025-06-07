@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="CENTER" spacing="10" stylesheets="@styles.css"
+      xmlns:fx="http://javafx.com/fxml">
+
+    <Label fx:id="statusMessageLabel" text="Waiting for game to start..." styleClass="status-label"/>
+    <Label fx:id="opponentLabel" text="Opponent: N/A" styleClass="info-label"/>
+    <Label fx:id="scoreLabel" text="Score: 0 - 0" styleClass="info-label"/>
+
+    <StackPane fx:id="loadingPane" alignment="CENTER" styleClass="loading-pane">
+        <Text text="Waiting for opponent..." styleClass="loading-text"/>
+    </StackPane>
+
+    <HBox fx:id="buttonsPane" alignment="CENTER" spacing="15" styleClass="buttons-pane">
+        <Button fx:id="rockButton" text="Rock" onAction="#onRockClick" styleClass="move-button"/>
+        <Button fx:id="paperButton" text="Paper" onAction="#onPaperClick" styleClass="move-button"/>
+        <Button fx:id="scissorsButton" text="Scissors" onAction="#onScissorsClick" styleClass="move-button"/>
+    </HBox>
+
+    <StackPane fx:id="movePlayedPane" alignment="CENTER" styleClass="move-played-pane">
+        <VBox alignment="CENTER" spacing="5">
+            <Text fx:id="selectedMoveText" text="You chose: " styleClass="selected-move-text"/>
+            <Text text="Waiting for opponent's move..." styleClass="waiting-text"/>
+        </VBox>
+    </StackPane>
+
+    <TextArea fx:id="gameLogArea" VBox.vgrow="ALWAYS" editable="false" wrapText="true"
+              promptText="Game log will appear here..." styleClass="game-log-area"/>
+
+</VBox>
