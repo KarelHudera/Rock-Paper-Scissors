@@ -1,6 +1,7 @@
 package karel.hudera.rps.server;
 
 import karel.hudera.rps.constants.Constants;
+import karel.hudera.rps.game.GameAction;
 import karel.hudera.rps.game.GameState;
 import karel.hudera.rps.game.LoginRequest;
 import karel.hudera.rps.game.LoginResponse;
@@ -99,12 +100,22 @@ public class ClientHandler implements Runnable {
                     Object receivedObject = input.readObject();
                     logger.info(String.format(Constants.LOG_RECEIVED_FROM_CLIENT, clientAddress, clientPort, receivedObject.getClass().getSimpleName()));
 
-                    // Můžete poslat přijatý objekt zpět pro jednoduchý echo test
-                    // V reálné hře byste zde zpracovali GameAction a poslali nový GameState
-                    output.writeObject(receivedObject); // Echo zpět klientovi
-                    output.flush();
-                    logger.info(String.format(Constants.LOG_SENT_TO_CLIENT, clientAddress, clientPort, receivedObject.getClass().getSimpleName()));
-                }
+                    if (receivedObject instanceof GameAction) {
+                        GameAction action = (GameAction) receivedObject;
+                        logger.info("Received GameAction from " + action.getPlayerId() + ": " + action.getChoice());
+
+                        // TODO: ZDE PŘEDEJDETE AKCI HERNÍMU MANAŽEROVI
+                        // Např.: gameManager.handlePlayerAction(this, action);
+                        // 'this' odkazuje na tento ClientHandler, aby GameManager věděl, od koho akce přišla.
+
+                    } else if (receivedObject instanceof LoginRequest) {
+                        // Toto by se nemělo dít po autentizaci, ale je dobré to ošetřit
+                        logger.warning("Received LoginRequest after authentication from " + clientAddress + ":" + clientPort);
+                        // Můžete odeslat chybovou odpověď nebo ignorovat
+                    } else {
+                        logger.warning("Received unexpected object type: " + receivedObject.getClass().getName());
+                    }
+                   }
 
             } else {
                 // Pokud autentizace selže, spojení se zavře ve `finally` bloku.

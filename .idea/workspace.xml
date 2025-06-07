@@ -4,18 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/GameMessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/GameState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/LoginRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/LoginResponse.java" afterDir="false" />
+    <list default="true" id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="fix: using only ObjectInputStream ObjectOutputStream">
+      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/GameAction.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/client/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/login-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/login-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/Move.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/Move.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/constants/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/constants/Constants.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +44,28 @@
   }
 }]]></component>
   <component name="TaskManager">
+    <task id="LOCAL-00001" summary="feat: protocol for login">
+      <option name="closed" value="true" />
+      <created>1749324876223</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1749324876223</updated>
+    </task>
+    <task id="LOCAL-00002" summary="fix: using only ObjectInputStream ObjectOutputStream">
+      <option name="closed" value="true" />
+      <created>1749324935813</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1749324935813</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: protocol for login" />
+    <MESSAGE value="fix: using only ObjectInputStream ObjectOutputStream" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: using only ObjectInputStream ObjectOutputStream" />
   </component>
 </project>

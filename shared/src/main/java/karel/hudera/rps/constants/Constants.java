@@ -36,6 +36,9 @@ public final class Constants {
     public static final String ENTER_MOVE = "Enter your move (ROCK, PAPER, SCISSORS): ";
     public static final String ENTER_USERNAME = "Enter your username: ";
     public static final String ENTER_PASSWORD = "Enter your password: ";
+    public static final String WAITING_FOR_GAME_START = "Waiting for game start.";
+    public static final String MAKE_YOUR_MOVE = "Make your move.";
+    public static final String WAITING_FOR_OPPONENT_MOVE = "Waiting for opponents move.";
 
     // Logging messages
     public static final String LOG_GAME_SESSION_STARTED = "🎮 Starting game between %s and %s";

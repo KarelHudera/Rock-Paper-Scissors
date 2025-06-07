@@ -122,7 +122,17 @@ public class Client {
     public boolean authenticate(String username, String password) {
         try {
             connect(); // Zajistíme, že jsme připojeni k serveru
-
+            Object initialObj = input.readObject();
+            if (initialObj instanceof GameState) {
+                GameState welcomeState = (GameState) initialObj;
+                logger.info(String.format(Constants.LOG_RECEIVED_MESSAGE + " Initial welcome: %s - %s",
+                        welcomeState.getClass().getSimpleName(), welcomeState.getMessage()));
+                // Můžete zobrazit tuto zprávu uživateli, např. "Vítejte na serveru!"
+            } else {
+                logger.log(Level.SEVERE, Constants.ERROR_LOGIN_FAILED + " Expected initial GameState, but received: " + initialObj.getClass().getName());
+                closeConnection(); // Neočekávaná první zpráva, uzavřít spojení
+                return false;
+            }
             // Vytvoříme a pošleme LoginRequest objekt
             LoginRequest request = new LoginRequest(username);
             logger.info(Constants.LOG_AUTH_ATTEMPT + username); // Používáme vaši konstantu
