@@ -1,6 +1,7 @@
 package karel.hudera.rps.server;
 
 import karel.hudera.rps.constants.Constants;
+import karel.hudera.rps.game.GameManager;
 import karel.hudera.rps.utils.ServerLogger;
 
 import java.io.IOException;
@@ -22,6 +23,8 @@ import java.util.logging.Logger;
  * The server runs in a separate thread to monitor connection status while
  * the main thread accepts new connections.
  * </p>
+ *
+ * @author Karel Hudera
  */
 public class Server implements Runnable {
 
@@ -31,11 +34,15 @@ public class Server implements Runnable {
     private int portNumber;
     private List<Thread> connections;
     private volatile boolean isRunning;
+    private GameManager gameManager;
 
     public Server(int portNumber) {
         this.portNumber = portNumber;
         this.connections = Collections.synchronizedList(new ArrayList<Thread>());
         this.isRunning = true;
+
+        // Initialize the game manager
+        this.gameManager = GameManager.getInstance();
 
         Thread monitorThread = new Thread(this, "ConnectionMonitor");
         monitorThread.start();
