@@ -1,9 +1,7 @@
 package karel.hudera.rps.server;
 
 import karel.hudera.rps.constants.Constants;
-import karel.hudera.rps.game.GameManager;
-import karel.hudera.rps.game.GameState;
-import karel.hudera.rps.game.LoginResponse;
+import karel.hudera.rps.game.*;
 import karel.hudera.rps.utils.ServerLogger;
 
 import java.io.BufferedReader;
@@ -34,8 +32,6 @@ public class ClientHandler implements Runnable {
 
     private static final Logger logger = ServerLogger.INSTANCE;
     private final Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
     private ObjectOutputStream objectOut;
     private ObjectInputStream objectIn;
     private volatile boolean connected;
@@ -62,10 +58,6 @@ public class ClientHandler implements Runnable {
         logger.info(String.format(Constants.LOG_CLIENT_CONNECTED, clientAddress, clientPort));
 
         try {
-            // Initialize input and output streams
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
             // Initialize object streams for serialized communication
             objectOut = new ObjectOutputStream(clientSocket.getOutputStream());
             objectIn = new ObjectInputStream(clientSocket.getInputStream());
@@ -77,7 +69,7 @@ public class ClientHandler implements Runnable {
 
             // Send welcome message as LoginResponse object
             LoginResponse welcomeResponse = new LoginResponse(true, Constants.WELCOME_MESSAGE);
-            sendObject(welcomeResponse);
+            sendMessage(welcomeResponse);
             logger.info(String.format(Constants.LOG_WELCOME_SENT, clientAddress, clientPort));
 
             // Add player to waiting queue
@@ -114,8 +106,8 @@ public class ClientHandler implements Runnable {
             connected = false;
 
             // Close resources
-            if (in != null) in.close();
-            if (out != null) out.close();
+            if (objectIn != null) objectIn.close();
+            if (objectOut != null) objectOut.close();
             if (clientSocket != null) clientSocket.close();
 
             logger.info(String.format(Constants.LOG_CLIENT_DISCONNECTED, clientAddress, clientPort));
@@ -125,70 +117,61 @@ public class ClientHandler implements Runnable {
     }
 
     /**
-     * Sends a message to the client.
+     * Sends a GameMessage object to the client.
      *
-     * @param message The message to send to the client.
+     * @param message The GameMessage object to send to the client.
      */
-    public void sendMessage(String message) {
-        if (out != null && isConnected()) {
-            out.println(message);
-            logger.info(String.format(Constants.LOG_SENT_TO_CLIENT,
-                    clientSocket.getInetAddress(), clientSocket.getPort(), message));
-        } else {
-            logger.warning(String.format(Constants.LOG_FAILED_SEND,
-                    clientSocket.getInetAddress(), clientSocket.getPort()));
-        }
-    }
-
-    /**
-     * Sends a serialized object to the client.
-     *
-     * @param obj The object to send to the client.
-     */
-    public void sendObject(Object obj) {
+    public void sendMessage(GameMessage message) {
         if (objectOut != null && isConnected()) {
             try {
-                objectOut.writeObject(obj);
+                objectOut.writeObject(message);
                 objectOut.flush();
                 logger.info(String.format(Constants.LOG_SENT_TO_CLIENT,
-                        clientSocket.getInetAddress(), clientSocket.getPort(), obj.toString()));
+                        clientSocket.getInetAddress(), clientSocket.getPort(), message.toString()));
             } catch (IOException e) {
-                logger.warning(String.format("Failed to send object to client %s:%d - %s",
+                logger.warning(String.format("Failed to send message to client %s:%d - %s",
                         clientSocket.getInetAddress(), clientSocket.getPort(), e.getMessage()));
+                connected = false;
             }
         } else {
             logger.warning(String.format(Constants.LOG_FAILED_SEND,
                     clientSocket.getInetAddress(), clientSocket.getPort()));
         }
-    }
-
-    /**
-     * Sends a LoginResponse to the client.
-     *
-     * @param success Whether the login was successful
-     * @param message The message to send with the response
-     */
-    public void sendLoginResponse(boolean success, String message) {
-        LoginResponse response = new LoginResponse(success, message);
-        sendObject(response);
     }
 
     /**
      * Observes and receives a message from the client.
+     * Can handle both GameMessage objects and String messages.
      *
      * @return The message received from the client or null if reading failed
      * @throws IOException If an I/O error occurs when reading
      */
-    public String observeMessage() throws IOException {
-        if (in != null && isConnected()) {
-            String message = in.readLine();
-            if (message != null) {
-                logger.info(String.format(Constants.LOG_RECEIVED_FROM_CLIENT,
-                        clientSocket.getInetAddress(), clientSocket.getPort(), message));
-            } else {
+    public GameMessage observeMessage() throws IOException {
+        if (objectIn != null && isConnected()) {
+            try {
+                // Try to read as an object first (for GameMessage instances)
+                GameMessage message = (GameMessage) ((ObjectInputStream) objectIn).readObject();
+
+                if (message != null) {
+                    logger.info(String.format(Constants.LOG_RECEIVED_FROM_CLIENT,
+                            clientSocket.getInetAddress(), clientSocket.getPort(),
+                            message));
+                    return message;
+                } else {
+                    connected = false;
+                    return null;
+                }
+            } catch (ClassNotFoundException e) {
+                logger.warning(String.format("Failed to deserialize object from client %s:%d - %s",
+                        clientSocket.getInetAddress(), clientSocket.getPort(), e.getMessage()));
                 connected = false;
+                return null;
+            } catch (IOException e) {
+                logger.warning(String.format("I/O error reading from client %s:%d - %s",
+                        clientSocket.getInetAddress(), clientSocket.getPort(), e.getMessage()));
+                connected = false;
+                throw e;
             }
-            return message;
         }
         return null;
     }

@@ -82,7 +82,7 @@ public class GameManager {
      */
     public void addWaitingPlayer(ClientHandler clientHandler) {
         waitingPlayers.add(clientHandler);
-        clientHandler.sendMessage(Constants.MSG_WAITING_FOR_OPPONENT);
+//        clientHandler.sendMessage(Constants.MSG_WAITING_FOR_OPPONENT);
         logger.info(String.format(Constants.LOG_PLAYER_WAITING, clientHandler.getClientInfo()));
     }
 
@@ -168,15 +168,15 @@ public class GameManager {
         try {
             // Add connected players who want to play again back to the waiting queue
             if (player1.isConnected()) {
-                String response1 = player1.observeMessage();
-                if (response1 != null && response1.equalsIgnoreCase(Constants.RESP_YES)) {
+                GameMessage response1 = player1.observeMessage();
+                if (response1 != null /* && response1.(Constants.RESP_YES)*/) {
                     addWaitingPlayer(player1);
                 }
             }
 
             if (player2.isConnected()) {
-                String response2 = player2.observeMessage();
-                if (response2 != null && response2.equalsIgnoreCase(Constants.RESP_YES)) {
+                GameMessage response2 = player2.observeMessage();
+                if (response2 != null /* && response2.equalsIgnoreCase(Constants.RESP_YES)*/) {
                     addWaitingPlayer(player2);
                 }
             }
