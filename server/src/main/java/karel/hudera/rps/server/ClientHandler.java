@@ -161,7 +161,7 @@ public class ClientHandler implements Runnable {
         if (objectIn != null && isConnected()) {
             try {
                 // Try to read as an object first (for GameMessage instances)
-                GameMessage message = (GameMessage) ((ObjectInputStream) objectIn).readObject();
+                GameMessage message = (GameMessage) objectIn.readObject();
 
                 if (message != null) {
                     logger.info(String.format(Constants.LOG_RECEIVED_FROM_CLIENT,
@@ -195,10 +195,8 @@ public class ClientHandler implements Runnable {
     public String getClientInfo() {
         if (clientSocket != null) {
             try {
-                // Snažíme se získat adresu a port, ale pokud je socket uzavřen, může to selhat
                 return clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort();
             } catch (Exception e) {
-                // Pokud selže získání info ze socketu, použijeme username nebo obecnou zprávu
                 logger.log(Level.FINE, "Failed to get socket info for client: " + e.getMessage());
                 return username != null ? username + " (Socket Error)" : "Unknown Client (Socket Error)";
             }

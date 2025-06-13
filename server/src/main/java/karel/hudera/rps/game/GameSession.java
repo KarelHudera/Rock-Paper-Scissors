@@ -38,7 +38,6 @@ public class GameSession {
             logger.info("GameSession: Player 2 handle initialized. Info: " + player2.getClientInfo());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "GameSession: Error getting client info in constructor: " + e.getMessage(), e);
-            // Zde bychom měli zvážit ukončení session, pokud nelze získat informace o klientech
             this.isActive = false;
         }
 
@@ -67,13 +66,10 @@ public class GameSession {
             player2.sendMessage(gameStartToPlayer2);
             logger.info("📤 Sent GAME_START to " + player2.getUsername() + " (opponent: " + player1.getUsername() + ")");
 
-            // Request moves from both players
-//            player1.sendMessage(Constants.MSG_REQUEST_MOVE);
-//            player2.sendMessage(Constants.MSG_REQUEST_MOVE);
-
             // Get player moves
             GameMessage move1 = player1.observeMessage();
             GameMessage move2 = player2.observeMessage();
+            logger.info("AAAAAAAAAAAAAAAAAAAAAAAAA");
             logger.info("Player 1 made move: " + move1);
             logger.info("Player 2 made move: " + move2);
 
@@ -96,16 +92,35 @@ public class GameSession {
     }
 
     /**
-     * Handles player disconnection during the game.
+     * Handles player disconnection during the game (legacy method).
      */
     private void handleDisconnection() {
-        if (player1.isConnected()) {
-//            player1.sendMessage(Constants.MSG_OPPONENT_DISCONNECTED);
-        }
-        if (player2.isConnected()) {
-//            player2.sendMessage(Constants.MSG_OPPONENT_DISCONNECTED);
+        // Check which player(s) are disconnected and handle accordingly
+        if (!player1.isConnected() && player2.isConnected()) {
+            handlePlayerDisconnection(player1, player2);
+        } else if (!player2.isConnected() && player1.isConnected()) {
+            handlePlayerDisconnection(player2, player1);
+        } else {
+            // Both disconnected or other error
+            logger.info("Both players disconnected or connection error occurred");
+            isActive = false;
         }
     }
+
+    private void handlePlayerDisconnection(ClientHandler disconnectedPlayer, ClientHandler remainingPlayer) {
+        logger.info("Handling disconnection of " + disconnectedPlayer.getClientInfo());
+
+        if (remainingPlayer.isConnected()) {
+            OpponentDisconnected disconnectedMsg = new OpponentDisconnected(
+                    disconnectedPlayer.getUsername()
+            );
+            remainingPlayer.sendMessage(disconnectedMsg);
+            logger.info("📤 Sent OpponentDisconnected to " + remainingPlayer.getUsername());
+        }
+
+        isActive = false;
+    }
+
 
     /**
      * Determines the winner of the game and notifies both players.
