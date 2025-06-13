@@ -55,32 +55,54 @@ public class GameSession {
      */
     public void play() {
         logger.info("GameSession: Starting play method.");
+        int player1Score = 0;
+        int player2Score = 0;
+
         try {
-            // Inform players they've been matched
+            player1.sendMessage(new GameStart(player2.getUsername()));
+            player2.sendMessage(new GameStart(player1.getUsername()));
 
-            GameStart gameStartToPlayer1 = new GameStart(player2.getUsername());
-            player1.sendMessage(gameStartToPlayer1);
-            logger.info("📤 Sent GAME_START to " + player1.getUsername() + " (opponent: " + player2.getUsername() + ")");
+            for (int round = 1; round <= 3; round++) {
+                logger.info("GameSession: Starting round " + round);
 
-            GameStart gameStartToPlayer2 = new GameStart(player1.getUsername());
-            player2.sendMessage(gameStartToPlayer2);
-            logger.info("📤 Sent GAME_START to " + player2.getUsername() + " (opponent: " + player1.getUsername() + ")");
+                GameMessage message1 = player1.observeMessage();
+                GameMessage message2 = player2.observeMessage();
 
-            // Get player moves
-            GameMessage move1 = player1.observeMessage();
-            GameMessage move2 = player2.observeMessage();
-            logger.info("AAAAAAAAAAAAAAAAAAAAAAAAA");
-            logger.info("Player 1 made move: " + move1);
-            logger.info("Player 2 made move: " + move2);
+                if (!(message1 instanceof GameMove) || !(message2 instanceof GameMove)) {
+                    logger.warning("GameSession: Invalid or null GameMove received.");
+                    handleDisconnection();
+                    return;
+                }
 
-            // Check for disconnections
-            if (move1 == null || move2 == null) {
-                handleDisconnection();
-                return;
+                Move move1 = ((GameMove) message1).getMove();
+                Move move2 = ((GameMove) message2).getMove();
+                Result result1, result2;
+
+                if (move1 == move2) {
+                    result1 = result2 = Result.DRAW;
+                } else if (isWinner(move1, move2)) {
+                    result1 = Result.WIN;
+                    result2 = Result.LOSE;
+                    player1Score++;
+                } else {
+                    result1 = Result.LOSE;
+                    result2 = Result.WIN;
+                    player2Score++;
+                }
+
+                logger.info(String.format("Round %d Result: %s (%s) vs %s (%s) -> [%s : %s]",
+                        round,
+                        player1.getUsername(), move1,
+                        player2.getUsername(), move2,
+                        result1, result2));
+
+                // Notify players about round results
+                player1.sendMessage(new RoundResult(move1, move2, result1, player1Score, player2Score));
+                player2.sendMessage(new RoundResult(move2, move1, result2, player2Score, player1Score));
             }
 
-            // Determine winner and notify players
-            //announceResult(move1, move2);
+            // Determine and send final result
+            sendFinalResults(player1Score, player2Score);
 
         } catch (IOException e) {
             logger.warning(String.format(Constants.ERROR_GAME_COMMUNICATION,
@@ -91,67 +113,48 @@ public class GameSession {
         }
     }
 
-    /**
-     * Handles player disconnection during the game (legacy method).
-     */
+    private void sendFinalResults(int player1Score, int player2Score) {
+        String resultP1, resultP2;
+
+        if (player1Score > player2Score) {
+            resultP1 = Constants.MSG_GAME_WIN;
+            resultP2 = Constants.MSG_GAME_LOSS;
+        } else if (player1Score < player2Score) {
+            resultP1 = Constants.MSG_GAME_LOSS;
+            resultP2 = Constants.MSG_GAME_WIN;
+        } else {
+            resultP1 = resultP2 = Constants.MSG_GAME_TIE;
+        }
+
+        player1.sendMessage(new GameResult(player1.getUsername(), String.valueOf(player1Score),
+                player2.getUsername(), String.valueOf(player2Score), resultP1));
+
+        player2.sendMessage(new GameResult(player2.getUsername(), String.valueOf(player2Score),
+                player1.getUsername(), String.valueOf(player1Score), resultP2));
+
+        logger.info(String.format("GameSession: Final result sent. [%s: %d] vs [%s: %d]",
+                player1.getUsername(), player1Score,
+                player2.getUsername(), player2Score));
+    }
+
     private void handleDisconnection() {
-        // Check which player(s) are disconnected and handle accordingly
         if (!player1.isConnected() && player2.isConnected()) {
             handlePlayerDisconnection(player1, player2);
         } else if (!player2.isConnected() && player1.isConnected()) {
             handlePlayerDisconnection(player2, player1);
         } else {
-            // Both disconnected or other error
-            logger.info("Both players disconnected or connection error occurred");
-            isActive = false;
-        }
-    }
-
-    private void handlePlayerDisconnection(ClientHandler disconnectedPlayer, ClientHandler remainingPlayer) {
-        logger.info("Handling disconnection of " + disconnectedPlayer.getClientInfo());
-
-        if (remainingPlayer.isConnected()) {
-            OpponentDisconnected disconnectedMsg = new OpponentDisconnected(
-                    disconnectedPlayer.getUsername()
-            );
-            remainingPlayer.sendMessage(disconnectedMsg);
-            logger.info("📤 Sent OpponentDisconnected to " + remainingPlayer.getUsername());
+            logger.info("Both players disconnected or error occurred.");
         }
 
         isActive = false;
     }
 
+    private void handlePlayerDisconnection(ClientHandler disconnected, ClientHandler remaining) {
+        logger.info("Player disconnected: " + disconnected.getClientInfo());
 
-    /**
-     * Determines the winner of the game and notifies both players.
-     *
-     * @param move1 First player's move
-     * @param move2 Second player's move
-     */
-    private void announceResult(String move1, String move2) {
-        // Tell each player what the opponent chose
-//        player1.sendMessage(String.format(Constants.MSG_OPPONENT_MOVE, move2));
-//        player2.sendMessage(String.format(Constants.MSG_OPPONENT_MOVE, move1));
-
-        // Determine winner
-        if (move1.equalsIgnoreCase(move2)) {
-            // Tie
-//            player1.sendMessage(Constants.MSG_GAME_TIE);
-//            player2.sendMessage(Constants.MSG_GAME_TIE);
-            logger.info(String.format(Constants.LOG_GAME_TIE,
-                    player1.getClientInfo(), player2.getClientInfo(), move1));
-        } else if (isWinner(move1, move2)) {
-            // Player 1 wins
-//            player1.sendMessage(Constants.MSG_GAME_WIN);
-//            player2.sendMessage(Constants.MSG_GAME_LOSS);
-            logger.info(String.format(Constants.LOG_GAME_WINNER,
-                    player1.getClientInfo(), player2.getClientInfo(), move1, move2));
-        } else {
-            // Player 2 wins
-//            player1.sendMessage(New GameResult(Constants.MSG_GAME_LOSS));
-//            player2.sendMessage(Constants.MSG_GAME_WIN);
-            logger.info(String.format(Constants.LOG_GAME_WINNER,
-                    player2.getClientInfo(), player1.getClientInfo(), move2, move1));
+        if (remaining.isConnected()) {
+            remaining.sendMessage(new OpponentDisconnected(disconnected.getUsername()));
+            logger.info("📤 Sent OpponentDisconnected to " + remaining.getUsername());
         }
     }
 
@@ -162,10 +165,10 @@ public class GameSession {
      * @param move2 Second player's move
      * @return true if move1 beats move2, false otherwise
      */
-    private boolean isWinner(String move1, String move2) {
-        return (move1.equalsIgnoreCase(Constants.MOVE_ROCK) && move2.equalsIgnoreCase(Constants.MOVE_SCISSORS)) ||
-                (move1.equalsIgnoreCase(Constants.MOVE_SCISSORS) && move2.equalsIgnoreCase(Constants.MOVE_PAPER)) ||
-                (move1.equalsIgnoreCase(Constants.MOVE_PAPER) && move2.equalsIgnoreCase(Constants.MOVE_ROCK));
+    private boolean isWinner(Move move1, Move move2) {
+        return (move1 == Move.ROCK && move2 == Move.SCISSORS) ||
+                (move1 == Move.SCISSORS && move2 == Move.PAPER) ||
+                (move1 == Move.PAPER && move2 == Move.ROCK);
     }
 
     /**
