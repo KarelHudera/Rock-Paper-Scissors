@@ -5,8 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="feat: players pairing">
+      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/GameMove.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/GameStart.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/Result.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shared/src/main/java/karel/hudera/rps/game/RoundResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/game/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/game/GameManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/GameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/java/karel/hudera/rps/client/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/game-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/paper.png" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/images/paper.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/rock.png" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/images/rock.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/src/main/resources/karel/hudera/rps/scissors.png" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/main/resources/images/scissors.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/game/GameSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/game/GameSession.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/karel/hudera/rps/server/ClientHandler.java" afterDir="false" />
     </list>
@@ -19,29 +30,70 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="server" />
+        <entry key="$PROJECT_DIR$" value="client" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.StartClient.executor": "Run",
-    "Application.StartServer.executor": "Run",
-    "Application.client.executor": "Run",
-    "git-widget-placeholder": "client",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;adela-domokosova&quot;
   }
-}]]></component>
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/KarelHudera/Rock-Paper-Scissors.git&quot;,
+    &quot;accountId&quot;: &quot;6939ba4b-fdde-4ee4-8003-d3cb3a0a4d13&quot;
+  }
+}</component>
+  <component name="MavenRunner">
+    <option name="jreName" value="ms-21" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;d2aabebb&quot;
+}</component>
+  <component name="ProjectId" id="2yRuPPdM3jcvYlwuliYabFsNscB" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.StartClient.executor&quot;: &quot;Run&quot;,
+    &quot;Application.StartServer.executor&quot;: &quot;Run&quot;,
+    &quot;Application.client.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.client [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.server [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.shared [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.shared [install].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;client2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.runner&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\school\Rock-Paper-Scissors\client\src\main\resources\images" />
+    </key>
+  </component>
   <component name="RunManager" selected="Application.client">
     <configuration name="StartServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="karel.hudera.rps.StartServer" />
@@ -72,8 +124,18 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.StartServer" />
+        <item itemvalue="Application.StartServer" />
+        <item itemvalue="Application.StartServer" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="TaskManager">
     <task id="LOCAL-00001" summary="feat: protocol for login">
@@ -140,8 +202,20 @@
       <option name="project" value="LOCAL" />
       <updated>1749610856548</updated>
     </task>
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="feat: players pairing" />
+      <created>1749809681595</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1749809681595</updated>
+      <workItem from="1749809682652" duration="7432000" />
+      <workItem from="1749817295707" duration="3166000" />
+    </task>
     <option name="localTasksCounter" value="9" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: protocol for login" />

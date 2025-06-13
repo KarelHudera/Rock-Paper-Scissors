@@ -44,15 +44,17 @@ public class GameSession {
      * - Handling disconnections and game completion
      */
     public void play() {
+
         try {
             // Inform players they've been matched
 
-            GameState lobbyState = new GameState(GameState.GameStatus.LOBBY_READY, "Game is starting")
-                    .setPlayerIds(player1.getClientInfo(), player2.getClientInfo())
-                    .setScores(0, 0);
+            GameStart gameStartToPlayer1 = new GameStart(player2.getUsername());
+            player1.sendMessage(gameStartToPlayer1);
+            logger.info("📤 Sent GAME_START to " + player1.getUsername() + " (opponent: " + player2.getUsername() + ")");
 
-            player1.sendMessage(lobbyState);
-            player2.sendMessage(lobbyState);
+            GameStart gameStartToPlayer2 = new GameStart(player1.getUsername());
+            player2.sendMessage(gameStartToPlayer2);
+            logger.info("📤 Sent GAME_START to " + player2.getUsername() + " (opponent: " + player1.getUsername() + ")");
 
             // Request moves from both players
 //            player1.sendMessage(Constants.MSG_REQUEST_MOVE);

@@ -62,15 +62,22 @@ public class ClientHandler implements Runnable {
             objectOut = new ObjectOutputStream(clientSocket.getOutputStream());
             objectIn = new ObjectInputStream(clientSocket.getInputStream());
 
+            Object initialMessage = objectIn.readObject(); // <-- Server čeká na PRVNÍ zprávu, která by měla být LoginRequest
+            if (!(initialMessage instanceof LoginRequest)) {
+                logger.warning("Received unexpected first message from client: " + initialMessage.getClass().getName());
+                // Můžeš poslat LoginResponse(false, "Unexpected initial message")
+                sendMessage(new LoginResponse(false, "Niočekávaná první zpráva."));
+                return; // Ukončit zpracování pro tohoto klienta
+            }
 
-            GameState welcomeState = new GameState(GameState.GameStatus.WAITING_FOR_PLAYERS, Constants.WELCOME_MESSAGE);
-            objectOut.writeObject(welcomeState);
-            objectOut.flush(); // Důležité: Vždy po odeslání objektu stream vyprázdněte (flush)!
+            LoginRequest loginRequest = (LoginRequest) initialMessage;
+            String username = loginRequest.getUsername();
+            logger.info("Received LOGIN request from " + username + " at " + getClientInfo());
 
-            // Send welcome message as LoginResponse object
-            LoginResponse welcomeResponse = new LoginResponse(true, Constants.WELCOME_MESSAGE);
-            sendMessage(welcomeResponse);
-            logger.info(String.format(Constants.LOG_WELCOME_SENT, clientAddress, clientPort));
+            // PROTOKOL: Server posílá LOGIN_RESPONSE
+            LoginResponse loginResponse = new LoginResponse(true, "Connected to RPS server"); // Můžeš použít Constants.WELCOME_MESSAGE
+            sendMessage(loginResponse);
+            logger.info("Sent LOGIN_RESPONSE to " + getClientInfo());
 
             // Add player to waiting queue
             GameManager.getInstance().addWaitingPlayer(this);
@@ -79,6 +86,7 @@ public class ClientHandler implements Runnable {
             while (connected && !clientSocket.isClosed()) {
                 try {
                     // Socket will be monitored for input from the GameSession
+                    Object receivedObject = objectIn.readObject();
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -88,6 +96,8 @@ public class ClientHandler implements Runnable {
             }
         } catch (IOException e) {
             logger.warning(String.format(Constants.ERROR_CLIENT_COMMUNICATION, clientAddress, clientPort, e.getMessage()));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         } finally {
             // Remove from waiting queue if still there
             GameManager.getInstance().removeWaitingPlayer(this);
@@ -192,5 +202,9 @@ public class ClientHandler implements Runnable {
      */
     public boolean isConnected() {
         return connected && !clientSocket.isClosed();
+    }
+
+    public String getUsername() {
+        return this.getUsername();
     }
 }
