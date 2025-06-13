@@ -146,7 +146,7 @@ public class LoginController {
             gameController.setClient(this.gameClient);
 
             Stage stage = (Stage) usernameField.getScene().getWindow(); // Nahraďte 'someButton' existujícím prvkem UI
-            Scene scene = new Scene(gameView);
+            Scene scene = new Scene(gameView,  600, 400);
             stage.setScene(scene);
             stage.setTitle("Rock-Paper-Scissors Game"); // Nebo váš titul
             stage.show();
