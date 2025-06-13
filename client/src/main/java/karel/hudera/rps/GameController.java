@@ -1,7 +1,9 @@
 package karel.hudera.rps;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -10,302 +12,232 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import karel.hudera.rps.client.Client;
 import karel.hudera.rps.constants.Constants;
-import karel.hudera.rps.game.GameAction;
-import karel.hudera.rps.game.GameMessage;
-import karel.hudera.rps.game.GameState;
-import karel.hudera.rps.game.Move;
+import karel.hudera.rps.game.*;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static karel.hudera.rps.game.GameState.GameStatus.*;
 
-public class GameController {
+public class GameController implements Initializable {
 
     private static final Logger logger = Logger.getLogger("GameLogger");
 
     private ExecutorService executorService; //pro asynchronní čtení zpráv
-    private final Client gameClient;
-    @FXML
-    private StackPane loadingPane;
+    @FXML private Label statusMessageLabel;
+    @FXML private Label yourUsernameLabel;
+    @FXML private Label opponentUsernameLabel;
+    @FXML private Label yourScoreLabel;
+    @FXML private Label opponentScoreLabel;
+    @FXML private Label roundResultLabel;
+    @FXML private Label waitingForOpponentMoveLabel; // Nový label
 
-    @FXML
-    private HBox buttonsPane; //tady budou buttons RPS
+    @FXML private Button rockButton;
+    @FXML private Button paperButton;
+    @FXML private Button scissorsButton;
+    @FXML private Button disconnectButton;
+    //logování událostí hry
+    private Client client;
+    private String loggedInUsername;// Reference na tvou Client instanci
+    private String opponentUsername;
 
-    @FXML
-    private StackPane movePlayedPane; //text "tah odeslán"
+    // Skóre
+    private int yourScore = 0;
+    private int opponentScore = 0;
 
-    @FXML
-    private Button rockButton, paperButton, scissorsButton;
-
-    @FXML
-    private Text selectedMoveText;
-
-    @FXML
-    private Label statusMessageLabel; //stavové zpráv od serveru
-    @FXML
-    private Label scoreLabel;         //skóre
-    @FXML
-    private Label opponentLabel;      //jméno protihráče
-    @FXML
-    private TextArea gameLogArea;     //logování událostí hry
-
-    public GameController(Client client) {
-        this.gameClient = client;
-        logger.info("GameController initialized for user: " + gameClient.getLoggedInUsername());
-    }
+    public GameController() {}
 
     /**
      * Initializes the controller after its root element has been completely processed.
      * Sets initial UI visibility and starts the thread for listening to server messages.
      */
-    @FXML
-    private void initialize() {
-        loadingPane.setVisible(false);
-        buttonsPane.setVisible(true);
-        loadingPane.setVisible(true); // Na začátku ukazujeme loading screen
-        buttonsPane.setVisible(false); // Tlačítka jsou skrytá
-        movePlayedPane.setVisible(false); // Move played screen je skrytý
-        setMoveButtonsEnabled(false); // Tlačítka jsou zakázaná
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        // Počáteční stavové zprávy
-        statusMessageLabel.setText(Constants.WAITING_FOR_OPPONENT);
-        scoreLabel.setText("Score: 0 - 0");
-        opponentLabel.setText("Waiting for opponent...");
-        if (gameLogArea != null) { // Zajistí, že logArea existuje (FXML)
-            gameLogArea.setEditable(false);
-            gameLogArea.setWrapText(true);
-            appendToGameLog("Game started for user: " + gameClient.getLoggedInUsername());
+
+        yourUsernameLabel.setText(loggedInUsername);
+        statusMessageLabel.setText(Constants.WAITING_FOR_OPPONENT); // "Waiting for opponent..."
+        opponentUsernameLabel.setText("...");
+        yourScoreLabel.setText("0");
+        opponentScoreLabel.setText("0");
+        roundResultLabel.setText("");
+        waitingForOpponentMoveLabel.setText("Pick your move!"); // Výchozí text
+
+        setMoveButtonsEnabled(false); // Tlačítka jsou na začátku zakázána
+    }
+
+    private void startMessageListener() {
+        logger.info("GameController: Entering startMessageListener. Value of 'this.client' is: " + (this.client != null ? "NOT NULL" : "NULL"));
+
+
+        if (this.client != null) {
+            logger.info("GameController: CHECKING client.isConnected() BEFORE THREAD START: " + this.client.isConnected());
+        } else {
+            logger.severe("GameController: client is NULL when trying to check isConnected() before thread start. This is unexpected.");
+            return; // Zastavit, pokud je client null
         }
 
 
-        // Spustit vlákno pro příjem zpráv od serveru
-        executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(this::listenForServerMessages);
-    }
-
-    /**
-     * Listens for incoming messages from the server in a separate thread.
-     * It continuously reads messages and dispatches them to the UI thread for handling.
-     * Handles potential I/O errors and connection loss.
-     */
-    private void listenForServerMessages() {
-        try {
-            while (true) {
-                // readServerMessage je blokující, čeká na zprávu
-                GameMessage message = gameClient.readServerMessage();
-                if (message instanceof GameState) {
-                    GameState gameState = (GameState) message;
-                    logger.info("Received GameState: " + gameState.getStatus() + " - " + gameState.getMessage());
-
-                    // Všechny aktualizace UI musí probíhat na JavaFX Application Thread!
-                    Platform.runLater(() -> handleGameState(gameState));
-                } else {
-                    logger.warning("Received unknown message type: " + message.getClass().getName());
-                    appendToGameLog("Received unknown message from server: " + message.getClass().getSimpleName());
+        new Thread(() -> {
+            logger.info("GameController: ClientMessageListener thread started. Value of 'client' (captured by lambda) is: " + (client != null ? "NOT NULL" : "NULL"));
+            try {
+                // Tento řádek už zde být nemusí, protože jsme ho zkontrolovali výše
+                // logger.info("GameController: BEFORE WHILE LOOP, client.isConnected() returns: " + this.client.isConnected());
+                while (client.isConnected()) {
+                    GameMessage message = client.readServerMessage();
+                    if (message != null) {
+                        Platform.runLater(() -> handleIncomingMessage(message));
+                    }
+                    Thread.sleep(50);
                 }
+            } catch (IOException e) {
+                logger.severe("Connection lost: " + e.getMessage());
+                Platform.runLater(() -> {
+                    statusMessageLabel.setText("Connection lost. Please restart.");
+                    setMoveButtonsEnabled(false);
+                    if (disconnectButton != null) disconnectButton.setDisable(true);
+                });
+            } catch (ClassNotFoundException e) {
+                logger.severe("Received unknown object from server: " + e.getMessage());
+                Platform.runLater(() -> statusMessageLabel.setText("Communication error."));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.warning("Message listener interrupted.");
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Unexpected error in ClientMessageListener thread: " + e.getMessage(), e);
+                Platform.runLater(() -> {
+                    statusMessageLabel.setText("Critical error. Please restart.");
+                    setMoveButtonsEnabled(false);
+                    if (disconnectButton != null) disconnectButton.setDisable(true);
+                });
+            }finally {
+                logger.info("Client message listener stopped.");
             }
-        } catch (IOException | ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Error listening for server messages: " + e.getMessage(), e);
-            appendToGameLog("Connection lost or error: " + e.getMessage());
-            // Zde byste mohli přesměrovat uživatele zpět na přihlašovací obrazovku
-            Platform.runLater(this::handleConnectionLoss);
-        } finally {
-            // Zavřeme spojení, pokud vlákno skončí (např. po chybě)
-            if (gameClient != null) {
-                gameClient.closeConnection();
-                logger.info("Game client connection closed in listener thread.");
+        }, "ClientMessageListener").start();
+    }
+
+    private void handleIncomingMessage(GameMessage message) {
+        logger.info("Received message in GameController: " + message.getClass().getSimpleName() + " - " + message.toString());
+
+        if (message instanceof GameStart) {
+            GameStart gameStartMessage = (GameStart) message;
+            opponentUsername = gameStartMessage.getOpponentUsername();
+
+            statusMessageLabel.setText("Game Started!");
+            opponentUsernameLabel.setText(opponentUsername);
+            yourScore = 0;
+            opponentScore = 0;
+            yourScoreLabel.setText("0");
+            opponentScoreLabel.setText("0");
+            roundResultLabel.setText("");
+            waitingForOpponentMoveLabel.setText("Pick your move!");
+            setMoveButtonsEnabled(true); // Povol tlačítka pro tah
+
+        } else if (message instanceof RoundResult) {
+            RoundResult roundResult = (RoundResult) message;
+
+            // Aktualizace skóre
+            yourScore = roundResult.getPlayer1Score(); // Předpokládám, že player1Score je tvé
+            opponentScore = roundResult.getPlayer2Score(); // Předpokládám, že player2Score je soupeře
+            yourScoreLabel.setText(String.valueOf(yourScore));
+            opponentScoreLabel.setText(String.valueOf(opponentScore));
+
+            // Zobrazení výsledku kola
+            String resultText = "";
+            if (roundResult.getRoundResult() == Result.WIN) {
+                resultText = "YOU WIN this round!";
+                roundResultLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
+            } else if (roundResult.getRoundResult() == Result.LOSE) {
+                resultText = "YOU LOSE this round!";
+                roundResultLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+            } else { // DRAW
+                resultText = "IT'S A DRAW!";
+                roundResultLabel.setStyle("-fx-text-fill: orange; -fx-font-weight: bold;");
             }
+            roundResultLabel.setText(resultText);
+
+            // Zobrazení tahů
+            waitingForOpponentMoveLabel.setText(String.format("You chose: %s, Opponent chose: %s",
+                    roundResult.getYourMove().name(), roundResult.getOpponentMove().name()));
+
+            statusMessageLabel.setText("Round finished. Pick your next move!");
+            setMoveButtonsEnabled(true); // Povol tlačítka pro další tah
+/**
+        } else if (message instanceof GameOver) {
+            GameOver gameOverMessage = (GameOver) message;
+            statusMessageLabel.setText("GAME OVER! " + gameOverMessage.getReason());
+            setMoveButtonsEnabled(false); // Zakázání tlačítek tahů
+            disconnectButton.setDisable(false); // Povolí jen disconnect
+            waitingForOpponentMoveLabel.setText(""); // Skryj text o tahu
+
+            logger.info("Game Over: " + gameOverMessage.getReason());
+
+        } else if (message instanceof PingMessage) {
+            logger.info("Received PING message from server.");
+ **/
+        } else {
+            logger.warning("Unhandled message type received: " + message.getClass().getSimpleName());
         }
-    }
-
-    /**
-     * Handles incoming GameState objects from the server, updating the UI accordingly.
-     * This method is always called on the JavaFX Application Thread.
-     *
-     * @param gameState The GameState object received from the server.
-     */
-    private void handleGameState(GameState gameState) {
-        statusMessageLabel.setText(gameState.getMessage()); // Zobrazí hlavní zprávu ze serveru
-        appendToGameLog("Server: " + gameState.getMessage());
-
-        // Aktualizovat jména hráčů a skóre
-        if (gameState.getPlayer1Id() != null && gameState.getPlayer2Id() != null) {
-            String myId = gameClient.getLoggedInUsername();
-            int myScore = 0;
-            int opponentScore = 0;
-            String opponentName = "";
-
-            if (myId != null && myId.equals(gameState.getPlayer1Id())) {
-                myScore = gameState.getPlayer1Score();
-                opponentScore = gameState.getPlayer2Score();
-                opponentName = gameState.getPlayer2Id();
-            } else if (myId != null && myId.equals(gameState.getPlayer2Id())) {
-                myScore = gameState.getPlayer2Score();
-                opponentScore = gameState.getPlayer1Score();
-                opponentName = gameState.getPlayer1Id();
-            }
-
-            opponentLabel.setText("Playing against: " + opponentName);
-            scoreLabel.setText("Score: " + myScore + " - " + opponentScore);
-        }
-
-        // Handle UI changes based on the current game status
-        switch (gameState.getStatus()) {
-            case WAITING_FOR_PLAYERS:
-                loadingPane.setVisible(true); // Ukazujeme loading
-                buttonsPane.setVisible(false); // Tlačítka jsou skrytá
-                setMoveButtonsEnabled(false);
-                appendToGameLog("Waiting for opponent to connect...");
-                break;
-            case LOBBY_READY:
-                loadingPane.setVisible(false); // Skryjeme loading
-                buttonsPane.setVisible(true); // Ukážeme tlačítka (ale ještě zakázané)
-                setMoveButtonsEnabled(false);
-                statusMessageLabel.setText(Constants.WAITING_FOR_GAME_START); // Např. "Protihráč připojen. Čekáme na spuštění hry."
-                appendToGameLog("Opponent connected! Game will start soon.");
-                break;
-            case ROUND_STARTED:
-                loadingPane.setVisible(false); // Skryjeme loading
-                buttonsPane.setVisible(true); // Ukážeme tlačítka
-                setMoveButtonsEnabled(true); // Povolíme hráči provést tah
-                movePlayedPane.setVisible(false); // Skryjeme zprávu o odehraném tahu
-                selectedMoveText.setText(""); // Vyčistíme text předchozího tahu
-                appendToGameLog("New round! Make your move.");
-                statusMessageLabel.setText(Constants.MAKE_YOUR_MOVE);
-                break;
-            case PLAYER_MADE_CHOICE:
-                setMoveButtonsEnabled(false); // Hráč již udělal tah, zakázat tlačítka
-                buttonsPane.setVisible(false);
-                movePlayedPane.setVisible(true); // Zobrazíme, že tah byl odeslán
-                appendToGameLog("You made your choice. Waiting for opponent...");
-                statusMessageLabel.setText(Constants.WAITING_FOR_OPPONENT_MOVE);
-                break;
-            case ROUND_ENDED:
-                setMoveButtonsEnabled(false); // Kolo skončilo, tahy zakázané
-                buttonsPane.setVisible(false); // Tlačítka jsou skrytá
-                movePlayedPane.setVisible(true); // Zobrazíme výsledky (nebo přejdeme na jiný panel)
-                appendToGameLog("Round ended! Result: " + gameState.getRoundResult());
-                appendToGameLog("Your choice: " + gameState.getYourChoice() + ", Opponent's choice: " + gameState.getOpponentChoice());
-                statusMessageLabel.setText(gameState.getMessage()); // Může obsahovat "Vyhrál jsi!", "Prohrál jsi!"
-                // Zde můžete aktualizovat obrázky tahů, pokud je máte
-                break;
-            case GAME_OVER:
-                setMoveButtonsEnabled(false); // Hra skončila
-                buttonsPane.setVisible(false);
-                movePlayedPane.setVisible(true); // Zobrazíme závěrečný stav
-                appendToGameLog("GAME OVER! " + gameState.getMessage()); // Zpráva už obsahuje vítěze
-                statusMessageLabel.setText(gameState.getMessage());
-                // Možná zobrazit alert s výsledkem hry a nabídnout novou hru nebo návrat do menu
-                // handleConnectionLoss(); // Zde byste mohli vrátit uživatele na login nebo zobrazit závěr
-                break;
-        }
-    }
-
-
-    /**
-     * Enables or disables the Rock, Paper, Scissors choice buttons.
-     *
-     * @param enable true to enable buttons, false to disable them.
-     */
-    private void setMoveButtonsEnabled(boolean enable) {
-        rockButton.setDisable(!enable);
-        paperButton.setDisable(!enable);
-        scissorsButton.setDisable(!enable);
-    }
-
-    /**
-     * Appends a message to the game log text area.
-     * Ensures UI update is performed on the JavaFX Application Thread.
-     *
-     * @param message The message to append.
-     */
-    private void appendToGameLog(String message) {
-        // Použijte Platform.runLater, protože UI aktualizace musí probíhat na JavaFX Application Thread
-        if (gameLogArea != null) {
-            Platform.runLater(() -> gameLogArea.appendText(message + "\n"));
-        }
-    }
-
-    /**
-     * Handles the event when the Rock button is clicked.
-     * Sends the player's "ROCK" choice to the server.
-     */
-    //TODO opravit controller v game-view.fxml definovat ho v fxml file ne tady
-    @FXML
-    private void onRockClick() {
-        sendPlayerChoice(Move.ROCK);
     }
 
     @FXML
-    private void onPaperClick() {
-        sendPlayerChoice(Move.PAPER);
-    }
+    private void handleMove(ActionEvent event) {
+        Button clickedButton = (Button) event.getSource();
+        String moveName = ""; // Bude obsahovat ROCK, PAPER nebo SCISSORS
 
-    @FXML
-    private void onScissorsClick() {
-        sendPlayerChoice(Move.SCISSORS);
-    }
+        // Určení tahu podle ID tlačítka
+        if (clickedButton == rockButton) {
+            moveName = "ROCK";
+        } else if (clickedButton == paperButton) {
+            moveName = "PAPER";
+        } else if (clickedButton == scissorsButton) {
+            moveName = "SCISSORS";
+        }
 
-    /**
-     * Sends the player's chosen move to the server.
-     * Updates the UI to reflect the sent move and disables further choices.
-     *
-     * @param choice The player's chosen move (ROCK, PAPER, or SCISSORS).
-     */
-    private void sendPlayerChoice(Move choice) {
-        logger.info("Player chose: " + choice.name());
-        selectedMoveText.setText("You chose: " + choice.name()); // Aktualizuje text zobrazeného tahu
-
-        // Vytvoření GameAction objektu pro odeslání na server
-        GameAction action = new GameAction(gameClient.getLoggedInUsername(), choice);
         try {
-            gameClient.sendToServer(action);
+            // Vytvoř GameMove zprávu
+            // Předpokládám, že Move je enum (ROCK, PAPER, SCISSORS)
+            GameMove gameMove = new GameMove(Move.valueOf(moveName));
+            client.sendToServer(gameMove);
+            statusMessageLabel.setText("You chose " + moveName + ".");
+            waitingForOpponentMoveLabel.setText("Waiting for opponent's move...");
             setMoveButtonsEnabled(false); // Zakázat tlačítka po odeslání tahu
-            buttonsPane.setVisible(false); // Skrýt tlačítka
-            movePlayedPane.setVisible(true); // Zobrazit "tah byl odehrán"
-            appendToGameLog("Sent your choice: " + choice.name());
+            roundResultLabel.setText(""); // Vyčisti předchozí výsledek
+
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failed to send player choice: " + e.getMessage(), e);
-            appendToGameLog("Error sending choice: " + e.getMessage());
-            statusMessageLabel.setText("Error sending move. Try again?");
-            // Možná znovu povolit tlačítka nebo zkusit znovu připojení
+            logger.severe("Failed to send move: " + e.getMessage());
+            statusMessageLabel.setText("Error sending move. Connection lost?");
+            setMoveButtonsEnabled(false);
         }
     }
 
-    /**
-     * Metoda pro ošetření ztráty spojení (např. přesun na login screen).
-     */
-    private void handleConnectionLoss() {
-        // Implementujte logiku pro návrat na přihlašovací obrazovku
-        // nebo zobrazení chybové zprávy uživateli
-        logger.warning("Connection lost. Returning to login screen.");
-        // Příklad: Návrat na login screen
-        try {
-            // Zde byste normálně načetli login-view.fxml a změnili scénu
-            // Kvůli jednoduchosti tohoto příkladu a absenci Main třídy zde jen log
-            // V reálné aplikaci byste to dělali například přes MainApp referenci nebo event bus
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to return to login screen: " + e.getMessage(), e);
-        }
+    @FXML
+    private void handleDisconnect(ActionEvent event) {
+        client.closeConnection();
+        Platform.runLater(() -> {
+            // Zde bys mohl přepnout scénu zpět na přihlašovací obrazovku
+            // Např. získat referenci na hlavní aplikaci a zavolat metodu pro přepnutí scény.
+            statusMessageLabel.setText("Disconnected from server.");
+            setMoveButtonsEnabled(false);
+            disconnectButton.setDisable(true);
+            logger.info("Client disconnected.");
+        });
     }
 
-    /**
-     * Metoda pro čištění zdrojů, když se GameController přestane používat.
-     */
-    public void shutdown() {
-        if (executorService != null) {
-            executorService.shutdownNow(); // Pokusí se okamžitě zastavit vlákna
-            logger.info("GameController executor service shut down.");
-        }
-        // Client je již uzavřen v listenForServerMessages.finally, ale pro jistotu
-        if (gameClient != null) {
-            gameClient.closeConnection(); // Zajistí, že spojení je uzavřeno
-            logger.info("GameClient connection explicitly closed during shutdown.");
-        }
+    private void setMoveButtonsEnabled(boolean enabled) {
+        rockButton.setDisable(!enabled);
+        paperButton.setDisable(!enabled);
+        scissorsButton.setDisable(!enabled);
     }
 
+    // Veřejná setter metoda pro přijetí instance Klienta
+    public void setClient(karel.hudera.rps.client.Client client) {
+        this.client = client;
+        startMessageListener();
+    }
 }
+

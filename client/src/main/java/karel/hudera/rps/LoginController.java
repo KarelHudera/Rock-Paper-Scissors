@@ -5,6 +5,7 @@ import javafx.animation.PauseTransition;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
@@ -35,6 +36,7 @@ public class LoginController {
     private Client gameClient; // Client instance for communicating with the game server
 
     private static final Logger logger = Logger.getLogger("ClientLogger");
+    private Client client;
 
     /**
      * Initializes the controller after its root element has been completely processed.
@@ -136,15 +138,18 @@ public class LoginController {
      */
     private void navigateToGameScreen() {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("game-view.fxml"));
-            // Předáme instanci klienta dál do nového kontroleru
-            GameController gameController = new GameController(gameClient);
-            fxmlLoader.setController(gameController);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/karel/hudera/rps/game-view.fxml"));
+            Parent gameView = loader.load();
 
-            Stage stage = (Stage) usernameField.getScene().getWindow();
-            stage.setScene(new Scene(fxmlLoader.load(), 600, 400));
-            stage.setTitle("Rock-Paper-Scissors - Game");
-            stage.show(); // Zobrazíme nové okno
+            GameController gameController = loader.getController();
+            logger.info("LoginController: gameClient instance before passing to GameController: " + (this.gameClient != null ? "NOT NULL" : "NULL"));
+            gameController.setClient(this.gameClient);
+
+            Stage stage = (Stage) usernameField.getScene().getWindow(); // Nahraďte 'someButton' existujícím prvkem UI
+            Scene scene = new Scene(gameView);
+            stage.setScene(scene);
+            stage.setTitle("Rock-Paper-Scissors Game"); // Nebo váš titul
+            stage.show();
 
         } catch (IOException e) {
             logger.severe("Failed to load game-view.fxml: " + e.getMessage());

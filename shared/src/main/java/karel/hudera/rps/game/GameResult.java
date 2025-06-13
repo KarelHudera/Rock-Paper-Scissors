@@ -6,7 +6,7 @@ import java.io.Serializable;
  * **/
 
 public class GameResult implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 9L;
     private String player1;
     private String move1;
     private String player2;

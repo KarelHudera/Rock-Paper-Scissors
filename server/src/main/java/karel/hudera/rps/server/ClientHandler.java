@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
@@ -35,7 +36,7 @@ public class ClientHandler implements Runnable {
     private ObjectOutputStream objectOut;
     private ObjectInputStream objectIn;
     private volatile boolean connected;
-
+    private String username;
     /**
      * Constructs a new ClientHandler to manage communication with a connected client.
      *
@@ -62,15 +63,22 @@ public class ClientHandler implements Runnable {
             objectOut = new ObjectOutputStream(clientSocket.getOutputStream());
             objectIn = new ObjectInputStream(clientSocket.getInputStream());
 
+            Object initialMessage = objectIn.readObject(); // <-- Server čeká na PRVNÍ zprávu, která by měla být LoginRequest
+            if (!(initialMessage instanceof LoginRequest)) {
+                logger.warning("Received unexpected first message from client: " + initialMessage.getClass().getName());
+                // Můžeš poslat LoginResponse(false, "Unexpected initial message")
+                sendMessage(new LoginResponse(false, "Niočekávaná první zpráva."));
+                return; // Ukončit zpracování pro tohoto klienta
+            }
 
-            GameState welcomeState = new GameState(GameState.GameStatus.WAITING_FOR_PLAYERS, Constants.WELCOME_MESSAGE);
-            objectOut.writeObject(welcomeState);
-            objectOut.flush(); // Důležité: Vždy po odeslání objektu stream vyprázdněte (flush)!
+            LoginRequest loginRequest = (LoginRequest) initialMessage;
+            this.username = loginRequest.getUsername();
+            logger.info("Received LOGIN request from " + username + " at " + getClientInfo());
 
-            // Send welcome message as LoginResponse object
-            LoginResponse welcomeResponse = new LoginResponse(true, Constants.WELCOME_MESSAGE);
-            sendMessage(welcomeResponse);
-            logger.info(String.format(Constants.LOG_WELCOME_SENT, clientAddress, clientPort));
+            // PROTOKOL: Server posílá LOGIN_RESPONSE
+            LoginResponse loginResponse = new LoginResponse(true, "Connected to RPS server"); // Můžeš použít Constants.WELCOME_MESSAGE
+            sendMessage(loginResponse);
+            logger.info("Sent LOGIN_RESPONSE to " + getClientInfo());
 
             // Add player to waiting queue
             GameManager.getInstance().addWaitingPlayer(this);
@@ -79,6 +87,7 @@ public class ClientHandler implements Runnable {
             while (connected && !clientSocket.isClosed()) {
                 try {
                     // Socket will be monitored for input from the GameSession
+                    Object receivedObject = objectIn.readObject();
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -88,6 +97,8 @@ public class ClientHandler implements Runnable {
             }
         } catch (IOException e) {
             logger.warning(String.format(Constants.ERROR_CLIENT_COMMUNICATION, clientAddress, clientPort, e.getMessage()));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         } finally {
             // Remove from waiting queue if still there
             GameManager.getInstance().removeWaitingPlayer(this);
@@ -182,7 +193,20 @@ public class ClientHandler implements Runnable {
      * @return A string in the format "address:port"
      */
     public String getClientInfo() {
-        return clientSocket.getInetAddress() + ":" + clientSocket.getPort();
+        if (clientSocket != null) {
+            try {
+                // Snažíme se získat adresu a port, ale pokud je socket uzavřen, může to selhat
+                return clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort();
+            } catch (Exception e) {
+                // Pokud selže získání info ze socketu, použijeme username nebo obecnou zprávu
+                logger.log(Level.FINE, "Failed to get socket info for client: " + e.getMessage());
+                return username != null ? username + " (Socket Error)" : "Unknown Client (Socket Error)";
+            }
+        } else if (username != null) { // Fallback pokud socket je null
+            return username + " (No Socket)";
+        } else {
+            return "Unknown Client";
+        }
     }
 
     /**
@@ -192,5 +216,9 @@ public class ClientHandler implements Runnable {
      */
     public boolean isConnected() {
         return connected && !clientSocket.isClosed();
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 }

@@ -5,6 +5,7 @@ import karel.hudera.rps.server.ClientHandler;
 import karel.hudera.rps.utils.ServerLogger;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -31,6 +32,16 @@ public class GameSession {
         this.player2 = player2;
         this.isActive = true;
 
+        logger.info("GameSession: Constructor entered.");
+        try {
+            logger.info("GameSession: Player 1 handle initialized. Info: " + player1.getClientInfo());
+            logger.info("GameSession: Player 2 handle initialized. Info: " + player2.getClientInfo());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "GameSession: Error getting client info in constructor: " + e.getMessage(), e);
+            // Zde bychom měli zvážit ukončení session, pokud nelze získat informace o klientech
+            this.isActive = false;
+        }
+
         logger.info(String.format(Constants.LOG_GAME_STARTED,
                 player1.getClientInfo(), player2.getClientInfo()));
     }
@@ -44,15 +55,17 @@ public class GameSession {
      * - Handling disconnections and game completion
      */
     public void play() {
+        logger.info("GameSession: Starting play method.");
         try {
             // Inform players they've been matched
 
-            GameState lobbyState = new GameState(GameState.GameStatus.LOBBY_READY, "Game is starting")
-                    .setPlayerIds(player1.getClientInfo(), player2.getClientInfo())
-                    .setScores(0, 0);
+            GameStart gameStartToPlayer1 = new GameStart(player2.getUsername());
+            player1.sendMessage(gameStartToPlayer1);
+            logger.info("📤 Sent GAME_START to " + player1.getUsername() + " (opponent: " + player2.getUsername() + ")");
 
-            player1.sendMessage(lobbyState);
-            player2.sendMessage(lobbyState);
+            GameStart gameStartToPlayer2 = new GameStart(player1.getUsername());
+            player2.sendMessage(gameStartToPlayer2);
+            logger.info("📤 Sent GAME_START to " + player2.getUsername() + " (opponent: " + player1.getUsername() + ")");
 
             // Request moves from both players
 //            player1.sendMessage(Constants.MSG_REQUEST_MOVE);

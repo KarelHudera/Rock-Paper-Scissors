@@ -60,6 +60,17 @@ public class Client {
     public Client(Logger logger) {
         this.logger = logger;
     }
+    private volatile boolean connected = false;
+
+    /**
+     * Public method to check if the client is currently connected.
+     * This method was missing!
+     * @return true if connected, false otherwise.
+     */
+    public boolean isConnected() {
+        return connected && (socket != null && !socket.isClosed() && socket.isConnected());
+    }
+
 
     /**
      * Initializes the client connection to the specified server and port.
@@ -81,15 +92,15 @@ public class Client {
      * @throws IOException If an I/O error occurs when creating the socket or streams.
      */
     private void connect() throws IOException {
-        // Používáme vaše konstanty pro adresu a port
-        if (socket == null || socket.isClosed()) {
+        if (socket == null || socket.isClosed() || !socket.isConnected()) { // Přidána kontrola !socket.isConnected()
             logger.info("Attempting to connect to server at " + Constants.SERVER_ADDRESS + ":" + Constants.PORT);
             socket = new Socket(Constants.SERVER_ADDRESS, Constants.PORT);
-            // Důležité: ObjectOutputStream musí být inicializován PŘED ObjectInputStream na obou stranách
-            // aby se zabránilo deadlocku při výměně hlaviček streamů.
             output = new ObjectOutputStream(socket.getOutputStream());
             input = new ObjectInputStream(socket.getInputStream());
             logger.info("Successfully connected to server and initialized streams.");
+            this.connected = true; // *** DŮLEŽITÉ: Nastavte na true po úspěšném připojení! ***
+        } else {
+            logger.info("Already connected or socket is still active.");
         }
     }
 
@@ -97,17 +108,7 @@ public class Client {
     public boolean authenticate(String username, String password) {
         try {
             connect(); // Zajistíme, že jsme připojeni k serveru
-            Object initialObj = input.readObject();
-            if (initialObj instanceof GameState) {
-                GameState welcomeState = (GameState) initialObj;
-                logger.info(String.format(Constants.LOG_RECEIVED_MESSAGE + " Initial welcome: %s - %s",
-                        welcomeState.getClass().getSimpleName(), welcomeState.getMessage()));
-                // Můžete zobrazit tuto zprávu uživateli, např. "Vítejte na serveru!"
-            } else {
-                logger.log(Level.SEVERE, Constants.ERROR_LOGIN_FAILED + " Expected initial GameState, but received: " + initialObj.getClass().getName());
-                closeConnection(); // Neočekávaná první zpráva, uzavřít spojení
-                return false;
-            }
+
             // Vytvoříme a pošleme LoginRequest objekt
             LoginRequest request = new LoginRequest(username);
             logger.info(Constants.LOG_AUTH_ATTEMPT + username); // Používáme vaši konstantu
@@ -163,7 +164,7 @@ public class Client {
      */
     public void sendToServer(GameMessage message) throws IOException {
         if (output != null) {
-            logger.info(String.format(Constants.LOG_SENT_TO_CLIENT + " %s", message.getClass().getSimpleName(), message.toString())); // Používáme vaši konstantu, ale pro klienta je to vlastně "odesláno na server"
+            logger.info(String.format("📤 Client sent message to server: %s - %s", message.getClass().getSimpleName(), message.toString())); // Používáme vaši konstantu, ale pro klienta je to vlastně "odesláno na server"
             output.writeObject(message);
             output.flush();
         } else {
@@ -198,7 +199,7 @@ public class Client {
                 output.close();
             }
             logger.info(Constants.LOG_CLIENT_CLOSED); // Používáme vaši konstantu
-
+            this.connected = false;
         } catch (IOException e) {
             logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR + ": " + e.getMessage(), e); // Používáme vaši konstantu
         } finally {
