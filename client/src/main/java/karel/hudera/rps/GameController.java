@@ -191,19 +191,22 @@ public class GameController implements Initializable {
     private void handleMove(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
         String moveName = ""; // Bude obsahovat ROCK, PAPER nebo SCISSORS
-
+        Move move = null;
         // Určení tahu podle ID tlačítka
         if (clickedButton == rockButton) {
             moveName = "ROCK";
+            move = Move.ROCK;
         } else if (clickedButton == paperButton) {
             moveName = "PAPER";
+            move = Move.PAPER;
         } else if (clickedButton == scissorsButton) {
             moveName = "SCISSORS";
+            move = Move.SCISSORS;
         }
 
         try {
             // GameMove -> enum (ROCK, PAPER, SCISSORS)
-            GameMove gameMove = new GameMove(Move.valueOf(moveName));
+            GameMove gameMove = new GameMove(move);
             client.sendToServer(gameMove);
             statusMessageLabel.setText("You chose " + moveName + ".");
             waitingForOpponentMoveLabel.setText("Waiting for opponent's move...");
