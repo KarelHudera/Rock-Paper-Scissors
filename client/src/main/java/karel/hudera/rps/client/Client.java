@@ -164,7 +164,7 @@ public class Client {
      */
     public void sendToServer(GameMessage message) throws IOException {
         if (output != null) {
-            logger.info(String.format(Constants.LOG_SENT_TO_CLIENT + " %s", message.getClass().getSimpleName(), message.toString())); // Používáme vaši konstantu, ale pro klienta je to vlastně "odesláno na server"
+            logger.info(String.format("📤 Client sent message to server: %s - %s", message.getClass().getSimpleName(), message.toString())); // Používáme vaši konstantu, ale pro klienta je to vlastně "odesláno na server"
             output.writeObject(message);
             output.flush();
         } else {

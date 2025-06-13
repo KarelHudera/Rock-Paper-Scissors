@@ -5,6 +5,7 @@ import karel.hudera.rps.server.ClientHandler;
 import karel.hudera.rps.utils.ServerLogger;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -31,6 +32,16 @@ public class GameSession {
         this.player2 = player2;
         this.isActive = true;
 
+        logger.info("GameSession: Constructor entered.");
+        try {
+            logger.info("GameSession: Player 1 handle initialized. Info: " + player1.getClientInfo());
+            logger.info("GameSession: Player 2 handle initialized. Info: " + player2.getClientInfo());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "GameSession: Error getting client info in constructor: " + e.getMessage(), e);
+            // Zde bychom měli zvážit ukončení session, pokud nelze získat informace o klientech
+            this.isActive = false;
+        }
+
         logger.info(String.format(Constants.LOG_GAME_STARTED,
                 player1.getClientInfo(), player2.getClientInfo()));
     }
@@ -44,7 +55,7 @@ public class GameSession {
      * - Handling disconnections and game completion
      */
     public void play() {
-
+        logger.info("GameSession: Starting play method.");
         try {
             // Inform players they've been matched
 

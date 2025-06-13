@@ -22,7 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static karel.hudera.rps.game.GameState.GameStatus.*;
 
 public class GameController implements Initializable {
 

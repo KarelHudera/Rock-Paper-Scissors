@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
@@ -35,7 +36,7 @@ public class ClientHandler implements Runnable {
     private ObjectOutputStream objectOut;
     private ObjectInputStream objectIn;
     private volatile boolean connected;
-
+    private String username;
     /**
      * Constructs a new ClientHandler to manage communication with a connected client.
      *
@@ -71,7 +72,7 @@ public class ClientHandler implements Runnable {
             }
 
             LoginRequest loginRequest = (LoginRequest) initialMessage;
-            String username = loginRequest.getUsername();
+            this.username = loginRequest.getUsername();
             logger.info("Received LOGIN request from " + username + " at " + getClientInfo());
 
             // PROTOKOL: Server posílá LOGIN_RESPONSE
@@ -192,7 +193,20 @@ public class ClientHandler implements Runnable {
      * @return A string in the format "address:port"
      */
     public String getClientInfo() {
-        return clientSocket.getInetAddress() + ":" + clientSocket.getPort();
+        if (clientSocket != null) {
+            try {
+                // Snažíme se získat adresu a port, ale pokud je socket uzavřen, může to selhat
+                return clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort();
+            } catch (Exception e) {
+                // Pokud selže získání info ze socketu, použijeme username nebo obecnou zprávu
+                logger.log(Level.FINE, "Failed to get socket info for client: " + e.getMessage());
+                return username != null ? username + " (Socket Error)" : "Unknown Client (Socket Error)";
+            }
+        } else if (username != null) { // Fallback pokud socket je null
+            return username + " (No Socket)";
+        } else {
+            return "Unknown Client";
+        }
     }
 
     /**
@@ -205,6 +219,6 @@ public class ClientHandler implements Runnable {
     }
 
     public String getUsername() {
-        return this.getUsername();
+        return this.username;
     }
 }

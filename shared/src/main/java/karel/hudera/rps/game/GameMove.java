@@ -1,7 +1,7 @@
 package karel.hudera.rps.game;
 
 public class GameMove extends GameMessage{
-    private static final long serialVersionUID = 8L;
+    private static final long serialVersionUID = 1L;
 
     private Move move; // Payload je enum Move
 
