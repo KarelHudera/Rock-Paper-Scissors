@@ -6,10 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
+import javafx.scene.layout.VBox;
 import karel.hudera.rps.client.Client;
 import karel.hudera.rps.constants.Constants;
 import karel.hudera.rps.game.*;
@@ -18,14 +15,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class GameController implements Initializable {
 
-    private static final Logger logger = Logger.getLogger("GameLogger");
+    private static final Logger logger = Logger.getLogger("ClientLogger");
 
     private ExecutorService executorService; //pro asynchronní čtení zpráv
     @FXML private Label statusMessageLabel;
@@ -35,6 +31,11 @@ public class GameController implements Initializable {
     @FXML private Label opponentScoreLabel;
     @FXML private Label roundResultLabel;
     @FXML private Label waitingForOpponentMoveLabel; // Nový label
+
+    @FXML
+    private VBox gameContentContainer;
+    @FXML
+    private VBox waitingOverlayContainer;
 
     @FXML private Button rockButton;
     @FXML private Button paperButton;
@@ -58,6 +59,8 @@ public class GameController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+        gameContentContainer.setVisible(true);
+        waitingOverlayContainer.setVisible(false);
 
         yourUsernameLabel.setText(loggedInUsername);
         statusMessageLabel.setText(Constants.WAITING_FOR_OPPONENT); // "Waiting for opponent..."
@@ -199,8 +202,7 @@ public class GameController implements Initializable {
         }
 
         try {
-            // Vytvoř GameMove zprávu
-            // Předpokládám, že Move je enum (ROCK, PAPER, SCISSORS)
+            // GameMove -> enum (ROCK, PAPER, SCISSORS)
             GameMove gameMove = new GameMove(Move.valueOf(moveName));
             client.sendToServer(gameMove);
             statusMessageLabel.setText("You chose " + moveName + ".");
@@ -208,6 +210,9 @@ public class GameController implements Initializable {
             setMoveButtonsEnabled(false); // Zakázat tlačítka po odeslání tahu
             roundResultLabel.setText(""); // Vyčisti předchozí výsledek
 
+            // změna UI
+            gameContentContainer.setVisible(false);
+            waitingOverlayContainer.setVisible(true);
         } catch (IOException e) {
             logger.severe("Failed to send move: " + e.getMessage());
             statusMessageLabel.setText("Error sending move. Connection lost?");
@@ -219,8 +224,6 @@ public class GameController implements Initializable {
     private void handleDisconnect(ActionEvent event) {
         client.closeConnection();
         Platform.runLater(() -> {
-            // Zde bys mohl přepnout scénu zpět na přihlašovací obrazovku
-            // Např. získat referenci na hlavní aplikaci a zavolat metodu pro přepnutí scény.
             statusMessageLabel.setText("Disconnected from server.");
             setMoveButtonsEnabled(false);
             disconnectButton.setDisable(true);

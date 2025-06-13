@@ -6,50 +6,75 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="karel.hudera.rps.GameController"> <padding>
-    <Insets top="20" right="20" bottom="20" left="20"/>
-</padding>
-    <top>
-        <VBox alignment="CENTER" spacing="10" BorderPane.alignment="CENTER">
-            <Label fx:id="statusMessageLabel" text="Waiting for opponent..." style="-fx-font-size: 18pt; -fx-font-weight: bold;"/>
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="karel.hudera.rps.GameController"
+           stylesheets="@styles.css">
+
+    <VBox fx:id="gameContentContainer" alignment="CENTER" spacing="15.0" styleClass="game-content-container">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <VBox alignment="CENTER" spacing="10">
+            <Label fx:id="statusMessageLabel" text="Waiting for opponent..." styleClass="game-status-label"/>
             <HBox alignment="CENTER" spacing="20">
-                <Label text="You:"/>
-                <Label fx:id="yourUsernameLabel" style="-fx-font-weight: bold;"/>
-                <Label text="vs."/>
-                <Label fx:id="opponentUsernameLabel" text="Opponent" style="-fx-font-weight: bold;"/>
+                <Label text="You:" styleClass="game-label"/>
+                <Label fx:id="yourUsernameLabel" styleClass="game-label game-username"/>
+                <Label text="vs." styleClass="game-label"/>
+                <Label fx:id="opponentUsernameLabel" text="Opponent" styleClass="game-label game-username"/>
             </HBox>
             <HBox alignment="CENTER" spacing="20">
-                <Label text="Score:"/>
-                <Label fx:id="yourScoreLabel" text="0"/>
-                <Label text="-"/>
-                <Label fx:id="opponentScoreLabel" text="0"/>
+                <Label text="Score:" styleClass="game-label"/>
+                <Label fx:id="yourScoreLabel" text="0" styleClass="game-score"/>
+                <Label text="-" styleClass="game-label"/>
+                <Label fx:id="opponentScoreLabel" text="0" styleClass="game-score"/>
             </HBox>
         </VBox>
-    </top>
-    <center>
-        <VBox alignment="CENTER" spacing="20" BorderPane.alignment="CENTER">
-            <Label fx:id="roundResultLabel" text="" style="-fx-font-size: 16pt; -fx-font-weight: bold; -fx-text-fill: #3366ff;"/>
 
-            <HBox alignment="CENTER" spacing="20">
+        <Label fx:id="roundResultLabel" text="" styleClass="game-round-result-label"/>
 
-                    <Button fx:id="rockButton" onAction="#handleMove" disable="true" text="Kámen">
-                    </Button>
+        <HBox fx:id="moveButtonsContainer" alignment="CENTER" spacing="20">
+            <Button fx:id="rockButton" onAction="#handleMove" disable="true" styleClass="game-image-button">
+                <graphic>
+                    <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
+                        <image>
+                            <Image url="@images/rock.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
 
-                    <Button fx:id="paperButton" onAction="#handleMove" disable="true" text="Papír">
-                    </Button>
+            <Button fx:id="paperButton" onAction="#handleMove" disable="true" styleClass="game-image-button">
+                <graphic>
+                    <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
+                        <image>
+                            <Image url="@images/paper.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
 
-                    <Button fx:id="scissorsButton" onAction="#handleMove" disable="true" text="Nůžky">
-                    </Button>
-
-            </HBox>
-            <Label fx:id="waitingForOpponentMoveLabel" text="Pick your move!" style="-fx-font-size: 14pt;"/>
-        </VBox>
-    </center>
-    <bottom>
-        <HBox alignment="CENTER" spacing="10" BorderPane.alignment="CENTER">
-            <Button fx:id="disconnectButton" text="Disconnect" onAction="#handleDisconnect"/>
+            <Button fx:id="scissorsButton" onAction="#handleMove" disable="true" styleClass="game-image-button">
+                <graphic>
+                    <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
+                        <image>
+                            <Image url="@images/scissors.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
         </HBox>
-    </bottom>
-</BorderPane>
+
+        <Label fx:id="waitingForOpponentMoveLabel" text="Pick your move!" styleClass="game-instruction-label"/>
+
+        <HBox alignment="CENTER" spacing="10">
+            <Button fx:id="disconnectButton" text="Disconnect" onAction="#handleDisconnect" styleClass="game-disconnect-button"/>
+        </HBox>
+    </VBox>
+
+    <VBox fx:id="waitingOverlayContainer" alignment="CENTER" visible="false" styleClass="waiting-overlay-container">
+        <Label text="Waiting for opponent's move..." styleClass="game-status-label"/>
+    </VBox>
+
+</StackPane>
