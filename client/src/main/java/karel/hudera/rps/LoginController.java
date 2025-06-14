@@ -19,24 +19,19 @@ import java.util.logging.Logger;
 
 public class LoginController {
 
+    private static final Logger logger = Logger.getLogger("ClientLogger");
+    private Client gameClient;
+
     @FXML
     private TextField usernameField;
-
     @FXML
     private PasswordField passwordField;
-
     @FXML
-    private Label errorLabel, successLabel; // Labels to display error and success messages
-
+    private Label errorLabel, successLabel;
     @FXML
-    private StackPane errorBox, successBox, messageContainer; // Containers for error and success messages, and a general message container
-
+    private StackPane errorBox, successBox, messageContainer;
     @FXML
     private Button loginButton;
-    private Client gameClient; // Client instance for communicating with the game server
-
-    private static final Logger logger = Logger.getLogger("ClientLogger");
-    private Client client;
 
     /**
      * Initializes the controller after its root element has been completely processed.
@@ -108,17 +103,6 @@ public class LoginController {
             showMessage(errorBox, errorLabel, "An unexpected error occurred during login. See logs.");
             gameClient.closeConnection(); // Zavřeme spojení
         });
-
-        // Nastavíme zprávu, kterou úloha použije, pokud selže
-        loginTask.messageProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.isEmpty()) {
-                // Tato zpráva se aktualizuje z call() metody, pokud je nastavena
-                // (pro naši implementaci loginu ji možná nebudeme přímo používat,
-                // ale je to dobrý vzor pro složitější Tasks)
-                //TODO asi smazat
-            }
-        });
-
         // Spustíme úlohu na novém vlákně
         new Thread(loginTask).start();
     }
