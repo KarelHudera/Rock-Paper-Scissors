@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>client</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -69,22 +70,28 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
-                <executions>
-                    <execution>
-                        <!-- Default configuration for running with: mvn clean javafx:run -->
-                        <id>default-cli</id>
-                        <configuration>
-                            <mainClass>karel.hudera.rps.client.StartClient</mainClass>
-                            <launcher>app</launcher>
-                            <jlinkZipName>app</jlinkZipName>
-                            <jlinkImageName>app</jlinkImageName>
-                            <noManPages>true</noManPages>
-                            <stripDebug>true</stripDebug>
-                            <noHeaderFiles>true</noHeaderFiles>
-                        </configuration>
-                    </execution>
-                </executions>
+                <version>0.0.8</version> <executions>
+                <execution>
+                    <id>default-cli</id>
+                    <configuration>
+                        <mainClass>karel.hudera.rps.client.StartClient</mainClass>
+                    </configuration>
+                </execution>
+
+                <execution>
+                    <id>jlink-build</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>jlink</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>karel.hudera.rps.ClientLauncher</mainClass>
+                        <launcher>rps-client</launcher> <jlinkImageName>rps-client-runtime</jlinkImageName> <jlinkZipName>rps-client-distribution</jlinkZipName> <noManPages>true</noManPages>
+                        <stripDebug>true</stripDebug>
+                        <noHeaderFiles>true</noHeaderFiles>
+                        <compress>2</compress> </configuration>
+                </execution>
+            </executions>
             </plugin>
         </plugins>
     </build>
