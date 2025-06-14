@@ -1,5 +1,6 @@
 package karel.hudera.rps;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -7,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import karel.hudera.rps.client.Client;
 import karel.hudera.rps.constants.Constants;
 import karel.hudera.rps.game.*;
@@ -30,8 +32,14 @@ public class GameController implements Initializable {
     @FXML private Label yourScoreLabel;
     @FXML private Label opponentScoreLabel;
     @FXML private Label roundResultLabel;
-    @FXML private Label waitingForOpponentMoveLabel; // Nový label
+    @FXML private Label waitingForOpponentMoveLabel;
 
+    //final results
+    @FXML private VBox resultOverlayContainer; // Nový kontejner
+    @FXML private Label finalYourMoveLabel;    // Label pro tvůj tah ve výsledku
+    @FXML private Label finalOpponentMoveLabel; // Label pro soupeřův tah ve výsledku
+    @FXML private Label finalRoundResultLabel;
+    @FXML private Label finalScoreLabel;
     @FXML
     private VBox gameContentContainer;
     @FXML
@@ -61,6 +69,7 @@ public class GameController implements Initializable {
 
         gameContentContainer.setVisible(true);
         waitingOverlayContainer.setVisible(false);
+        resultOverlayContainer.setVisible(false);
 
         yourUsernameLabel.setText(loggedInUsername);
         statusMessageLabel.setText(Constants.WAITING_FOR_OPPONENT); // "Waiting for opponent..."
@@ -161,27 +170,31 @@ public class GameController implements Initializable {
                 resultText = "IT'S A DRAW!";
                 roundResultLabel.setStyle("-fx-text-fill: orange; -fx-font-weight: bold;");
             }
-            roundResultLabel.setText(resultText);
+            finalRoundResultLabel.setText(resultText);
 
-            // Zobrazení tahů
-            waitingForOpponentMoveLabel.setText(String.format("You chose: %s, Opponent chose: %s",
-                    roundResult.getYourMove().name(), roundResult.getOpponentMove().name()));
+            // Aktualizuj globální skóre a labely na hlavní obrazovce, nebo jen na výsledkovém overlayi
+            yourScore = roundResult.getPlayer1Score();
+            opponentScore = roundResult.getPlayer2Score();
+            yourScoreLabel.setText(String.valueOf(yourScore));
+            opponentScoreLabel.setText(String.valueOf(opponentScore));
+            finalScoreLabel.setText(String.format("Score: You %d - Opponent %d", yourScore, opponentScore));
 
-            statusMessageLabel.setText("Round finished. Pick your next move!");
-            setMoveButtonsEnabled(true); // Povol tlačítka pro další tah
-/**
-        } else if (message instanceof GameOver) {
-            GameOver gameOverMessage = (GameOver) message;
-            statusMessageLabel.setText("GAME OVER! " + gameOverMessage.getReason());
-            setMoveButtonsEnabled(false); // Zakázání tlačítek tahů
-            disconnectButton.setDisable(false); // Povolí jen disconnect
-            waitingForOpponentMoveLabel.setText(""); // Skryj text o tahu
 
-            logger.info("Game Over: " + gameOverMessage.getReason());
+            // Skryj herní a čekací overlay, zobraz výsledkový overlay
+            gameContentContainer.setVisible(false);
+            waitingOverlayContainer.setVisible(false);
+            resultOverlayContainer.setVisible(true);
 
-        } else if (message instanceof PingMessage) {
-            logger.info("Received PING message from server.");
- **/
+            // Nastav timer pro automatický návrat do stavu výběru tahu
+            PauseTransition delay = new PauseTransition(Duration.seconds(2)); // Zobraz výsledek na 2 sekundy
+            delay.setOnFinished(event -> {
+                resultOverlayContainer.setVisible(false); // Skryj výsledkový overlay
+                gameContentContainer.setVisible(true);   // Zobraz hlavní herní obrazovku
+                waitingForOpponentMoveLabel.setText("Pick your move for the next round!"); // Nastav pro další kolo
+                roundResultLabel.setText(""); // Vyčisti minulý výsledek z hlavního labelu
+                setMoveButtonsEnabled(true); // Povol tlačítka pro tah
+            });
+            delay.play();
         } else {
             logger.warning("Unhandled message type received: " + message.getClass().getSimpleName());
         }
@@ -214,8 +227,15 @@ public class GameController implements Initializable {
             roundResultLabel.setText(""); // Vyčisti předchozí výsledek
 
             // změna UI
-            gameContentContainer.setVisible(false);
-            waitingOverlayContainer.setVisible(true);
+            Platform.runLater(() -> {
+                gameContentContainer.setVisible(false);
+                waitingOverlayContainer.setVisible(true);
+                resultOverlayContainer.setVisible(false); // Ujisti se, že je skrytý
+                waitingForOpponentMoveLabel.setText("Waiting for opponent's move...");
+            });
+
+            setMoveButtonsEnabled(false);
+            roundResultLabel.setText("");
         } catch (IOException e) {
             logger.severe("Failed to send move: " + e.getMessage());
             statusMessageLabel.setText("Error sending move. Connection lost?");

@@ -77,4 +77,31 @@
         <Label text="Waiting for opponent's move..." styleClass="game-status-label"/>
     </VBox>
 
+    <VBox fx:id="resultOverlayContainer" alignment="CENTER" spacing="20" visible="false"
+          styleClass="result-overlay-container">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <Label text="Round Over!" styleClass="result-title-label"/>
+
+        <HBox alignment="CENTER" spacing="40">
+            <VBox alignment="CENTER" spacing="5">
+                <Label text="Your Move:" styleClass="result-move-label"/>
+                <Label fx:id="finalYourMoveLabel" text="[Move]" styleClass="result-player-move-label"/>
+            </VBox>
+            <Label text="VS" styleClass="result-vs-label"/>
+            <VBox alignment="CENTER" spacing="5">
+                <Label text="Opponent's Move:" styleClass="result-move-label"/>
+                <Label fx:id="finalOpponentMoveLabel" text="[Move]" styleClass="result-opponent-move-label"/>
+            </VBox>
+        </HBox>
+
+        <Label fx:id="finalRoundResultLabel" text="[RESULT]" styleClass="result-final-result-label"/>
+
+        <Label fx:id="finalScoreLabel" text="Score: You 0 - Opponent 0" styleClass="result-score-label"/>
+
+        <Label text="Next round starting soon..." styleClass="result-next-round-label"/>
+    </VBox>
+
 </StackPane>
