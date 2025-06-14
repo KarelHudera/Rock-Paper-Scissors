@@ -116,11 +116,11 @@
         </HBox>
     </VBox>
 
-    <HBox alignment="TOP_RIGHT" StackPane.alignment="TOP_RIGHT">
+    <HBox alignment="TOP_RIGHT" StackPane.alignment="TOP_RIGHT" mouseTransparent="true">
         <padding>
             <Insets top="15" right="15"/>
         </padding>
-        <Button fx:id="disconnectButton" text="Disconnect" onAction="#handleDisconnect" styleClass="game-disconnect-button"/>
+        <Button fx:id="disconnectButton" text="Disconnect" onAction="#handleDisconnect" styleClass="game-disconnect-button" mouseTransparent="false"/>
     </HBox>
 
 </StackPane>

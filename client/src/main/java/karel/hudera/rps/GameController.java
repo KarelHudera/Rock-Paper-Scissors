@@ -26,7 +26,6 @@ public class GameController implements Initializable {
 
     private static final Logger logger = Logger.getLogger("ClientLogger");
 
-    private ExecutorService executorService; //pro asynchronní čtení zpráv
     @FXML private Label statusMessageLabel;
     @FXML private Label yourUsernameLabel;
     @FXML private Label opponentUsernameLabel;
@@ -40,7 +39,6 @@ public class GameController implements Initializable {
     @FXML private Label finalYourMoveLabel;    // Label pro tvůj tah ve výsledku
     @FXML private Label finalOpponentMoveLabel; // Label pro soupeřův tah ve výsledku
     @FXML private Label finalRoundResultLabel;
-    @FXML private Label finalScoreLabel;
     @FXML
     private VBox gameContentContainer;
     @FXML
@@ -148,6 +146,11 @@ public class GameController implements Initializable {
             GameStart gameStartMessage = (GameStart) message;
             opponentUsername = gameStartMessage.getOpponentUsername();
 
+            logger.info("GameStart received. Before enabling buttons - Rock button disabled: " + rockButton.isDisable());
+            setMoveButtonsEnabled(true); // Povol tlačítka pro tah
+            logger.info("GameStart received. After enabling buttons - Rock button disabled: " + rockButton.isDisable());
+            logger.info("GameStart received. gameContentContainer visible: " + gameContentContainer.isVisible() + ", waitingOverlayContainer visible: " + waitingOverlayContainer.isVisible() + ", resultOverlayContainer visible: " + resultOverlayContainer.isVisible() + ", finalResultOverlayContainer visible: " + finalResultOverlayContainer.isVisible());
+
             statusMessageLabel.setText("Game Started!");
             opponentUsernameLabel.setText(opponentUsername);
             yourScore = 0;
@@ -156,7 +159,7 @@ public class GameController implements Initializable {
             opponentScoreLabel.setText("0");
             roundResultLabel.setText("");
             waitingForOpponentMoveLabel.setText("Pick your move!");
-            setMoveButtonsEnabled(true); // Povol tlačítka pro tah
+
 
         } else if (message instanceof RoundResult) {
             RoundResult roundResult = (RoundResult) message;
