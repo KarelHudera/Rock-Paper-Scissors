@@ -82,12 +82,11 @@ public class ClientHandler implements Runnable {
 
             // Add player to waiting queue
             GameManager.getInstance().addWaitingPlayer(this);
+            logger.info(String.format(Constants.LOG_PLAYER_WAITING, getClientInfo()));
 
             // Keep connection alive until client disconnects
             while (connected && !clientSocket.isClosed()) {
                 try {
-                    // Socket will be monitored for input from the GameSession
-                    Object receivedObject = objectIn.readObject();
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
