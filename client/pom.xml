@@ -16,25 +16,40 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.2</junit.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
     <dependencies>
-        <!-- Shared module dependency -->
         <dependency>
             <groupId>karel.hudera.rps</groupId>
             <artifactId>shared</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-        <!-- JavaFX Modules -->
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>21</version>
+            <classifier>${javafx.platform}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>21</version>
+            <classifier>${javafx.platform}</classifier>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>21</version>
+            <classifier>${javafx.platform}</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>21</version>
+            <classifier>${javafx.platform}</classifier>
         </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
@@ -63,36 +78,80 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version> <executions>
-                <execution>
-                    <id>default-cli</id>
-                    <configuration>
-                        <mainClass>karel.hudera.rps.client.StartClient</mainClass>
-                    </configuration>
-                </execution>
 
-                <execution>
-                    <id>jlink-build</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>jlink</goal>
-                    </goals>
-                    <configuration>
-                        <mainClass>karel.hudera.rps.ClientLauncher</mainClass>
-                        <launcher>rps-client</launcher> <jlinkImageName>rps-client-runtime</jlinkImageName> <jlinkZipName>rps-client-distribution</jlinkZipName> <noManPages>true</noManPages>
-                        <stripDebug>true</stripDebug>
-                        <noHeaderFiles>true</noHeaderFiles>
-                        <compress>2</compress> </configuration>
-                </execution>
-            </executions>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>karel.hudera.rps.ClientLauncher</mainClass>
+                                </manifest>
+                                <addMavenDescriptor>false</addMavenDescriptor>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>default-platform</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <javafx.platform>win</javafx.platform> </properties>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <javafx.platform>linux</javafx.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <properties>
+                <javafx.platform>mac</javafx.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <properties>
+                <javafx.platform>win</javafx.platform>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>
