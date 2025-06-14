@@ -110,7 +110,7 @@ public class Client {
             connect(); // Zajistíme, že jsme připojeni k serveru
 
             // Vytvoříme a pošleme LoginRequest objekt
-            LoginRequest request = new LoginRequest(username);
+            LoginRequest request = new LoginRequest(username, password);
             logger.info(Constants.LOG_AUTH_ATTEMPT + username); // Používáme vaši konstantu
             output.writeObject(request);
             output.flush(); // Důležité pro okamžité odeslání dat

@@ -1,9 +1,6 @@
 package karel.hudera.rps.game;
 
 import java.io.Serializable;
-/**
- * To be Deleted
- * **/
 
 public class GameResult extends GameMessage {
     private static final long serialVersionUID = 9L;

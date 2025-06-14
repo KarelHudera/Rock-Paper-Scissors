@@ -35,9 +35,9 @@ public class GameController implements Initializable {
     @FXML private Label waitingForOpponentMoveLabel;
 
     //final results
-    @FXML private VBox resultOverlayContainer; // Nový kontejner
-    @FXML private Label finalYourMoveLabel;    // Label pro tvůj tah ve výsledku
-    @FXML private Label finalOpponentMoveLabel; // Label pro soupeřův tah ve výsledku
+    @FXML private VBox resultOverlayContainer;
+    @FXML private Label finalYourMoveLabel;
+    @FXML private Label finalOpponentMoveLabel;
     @FXML private Label finalRoundResultLabel;
     @FXML
     private VBox gameContentContainer;
@@ -54,13 +54,13 @@ public class GameController implements Initializable {
     @FXML private Button disconnectButton;
     //logování událostí hry
     private Client client;
-    private String loggedInUsername;// Reference na tvou Client instanci
+    private String loggedInUsername;
     private String opponentUsername;
 
     // Skóre
     private int yourScore = 0;
     private int opponentScore = 0;
-    private final int CLIENT_MAX_ROUNDS = 3; // <-- Hardcode na klientovi, podle serveru
+    private final int CLIENT_MAX_ROUNDS = 3; // <-- Hardcoded na klientovi, podle serveru
     private int clientCurrentRound = 0;
 
     public GameController() {}
@@ -79,14 +79,14 @@ public class GameController implements Initializable {
         clientCurrentRound = 0;
 
         yourUsernameLabel.setText(loggedInUsername);
-        statusMessageLabel.setText(Constants.WAITING_FOR_OPPONENT); // "Waiting for opponent..."
+        statusMessageLabel.setText(Constants.WAITING_FOR_OPPONENT);
         opponentUsernameLabel.setText("...");
         yourScoreLabel.setText("0");
         opponentScoreLabel.setText("0");
         roundResultLabel.setText("");
-        waitingForOpponentMoveLabel.setText("Pick your move!"); // Výchozí text
+        waitingForOpponentMoveLabel.setText("Pick your move!");
 
-        setMoveButtonsEnabled(false); // Tlačítka jsou na začátku zakázána
+        setMoveButtonsEnabled(false);
     }
 
     private void startMessageListener() {
@@ -104,8 +104,6 @@ public class GameController implements Initializable {
         new Thread(() -> {
             logger.info("GameController: ClientMessageListener thread started. Value of 'client' (captured by lambda) is: " + (client != null ? "NOT NULL" : "NULL"));
             try {
-                // Tento řádek už zde být nemusí, protože jsme ho zkontrolovali výše
-                // logger.info("GameController: BEFORE WHILE LOOP, client.isConnected() returns: " + this.client.isConnected());
                 while (client.isConnected()) {
                     GameMessage message = client.readServerMessage();
                     if (message != null) {
@@ -191,46 +189,43 @@ public class GameController implements Initializable {
             // Skryj herní a čekací overlay, zobraz výsledkový overlay
             gameContentContainer.setVisible(false);
             waitingOverlayContainer.setVisible(false);
-            resultOverlayContainer.setVisible(true); // Zobrazíme krátký overlay pro výsledek kola
+            resultOverlayContainer.setVisible(true);
 
-            setMoveButtonsEnabled(false); // Zakážeme tlačítka pro dobu zobrazení výsledku
+            setMoveButtonsEnabled(false);
 
-            clientCurrentRound++; // Inkrementuj počítadlo kol klienta
+            clientCurrentRound++;
 
-            if (clientCurrentRound < CLIENT_MAX_ROUNDS) { // Pokud nejsme u posledního kola
-                // Nastav timer pro automatický návrat do stavu výběru tahu (pro další kolo)
-                PauseTransition delay = new PauseTransition(Duration.seconds(2)); // Zobraz výsledek na 2 sekundy
+            if (clientCurrentRound < CLIENT_MAX_ROUNDS) {
+                PauseTransition delay = new PauseTransition(Duration.seconds(2));
                 delay.setOnFinished(event -> {
                     resultOverlayContainer.setVisible(false); // Skryj výsledkový overlay
                     gameContentContainer.setVisible(true);   // Zobraz hlavní herní obrazovku
                     waitingForOpponentMoveLabel.setText("Pick your move for round " + (clientCurrentRound + 1) + "!");
-                    roundResultLabel.setText(""); // Vyčisti minulý výsledek z hlavního labelu
-                    setMoveButtonsEnabled(true); // Povol tlačítka pro tah
+                    roundResultLabel.setText("");
+                    setMoveButtonsEnabled(true);
                 });
                 delay.play();
-            } else { // Jsme po posledním kole! Zobraz finální výsledek.
-                PauseTransition finalDelay = new PauseTransition(Duration.seconds(3)); // Nech výsledek kola viditelný déle
+            } else {
+                PauseTransition finalDelay = new PauseTransition(Duration.seconds(3));
                 finalDelay.setOnFinished(event -> {
-                    // Skryj všechny herní overlaye
+
                     gameContentContainer.setVisible(false);
                     waitingOverlayContainer.setVisible(false);
                     resultOverlayContainer.setVisible(false);
 
-                    // Zobraz finální výsledkový overlay
                     finalResultOverlayContainer.setVisible(true);
 
-                    // Urči celkový výsledek hry
                     String finalOutcomeText;
                     String finalOutcomeStyle = "";
                     if (yourScore > opponentScore) {
                         finalOutcomeText = "YOU WIN THE GAME!";
-                        finalOutcomeStyle = "-fx-text-fill: #28a745;"; // Zelená pro WIN
+                        finalOutcomeStyle = "-fx-text-fill: #28a745;";
                     } else if (opponentScore > yourScore) {
                         finalOutcomeText = "YOU LOSE THE GAME!";
-                        finalOutcomeStyle = "-fx-text-fill: #dc3545;"; // Červená pro LOSE
+                        finalOutcomeStyle = "-fx-text-fill: #dc3545;";
                     } else {
                         finalOutcomeText = "IT'S A TIE GAME!";
-                        finalOutcomeStyle = "-fx-text-fill: #ffc107;"; // Oranžová pro DRAW
+                        finalOutcomeStyle = "-fx-text-fill: #ffc107;";
                     }
                     finalGameOutcomeLabel.setText(finalOutcomeText);
                     finalGameOutcomeLabel.setStyle(finalOutcomeStyle);
@@ -243,7 +238,7 @@ public class GameController implements Initializable {
     @FXML
     private void handleMove(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
-        String moveName = ""; // Bude obsahovat ROCK, PAPER nebo SCISSORS
+        String moveName = "";
         Move move = null;
         // Určení tahu podle ID tlačítka
         if (clickedButton == rockButton) {
@@ -258,19 +253,18 @@ public class GameController implements Initializable {
         }
 
         try {
-            // GameMove -> enum (ROCK, PAPER, SCISSORS)
             GameMove gameMove = new GameMove(move);
             client.sendToServer(gameMove);
             statusMessageLabel.setText("You chose " + moveName + ".");
             waitingForOpponentMoveLabel.setText("Waiting for opponent's move...");
-            setMoveButtonsEnabled(false); // Zakázat tlačítka po odeslání tahu
-            roundResultLabel.setText(""); // Vyčisti předchozí výsledek
+            setMoveButtonsEnabled(false);
+            roundResultLabel.setText("");
 
             // změna UI
             Platform.runLater(() -> {
                 gameContentContainer.setVisible(false);
                 waitingOverlayContainer.setVisible(true);
-                resultOverlayContainer.setVisible(false); // Ujisti se, že je skrytý
+                resultOverlayContainer.setVisible(false);
                 waitingForOpponentMoveLabel.setText("Waiting for opponent's move...");
             });
 
@@ -283,13 +277,17 @@ public class GameController implements Initializable {
         }
     }
 
+    /**
+     * Ovládá disconnect button.
+     * Volá metodu klienta pro odpojení od serveru a posílá mu zrávu o ukončení spojení.
+     * **/
     @FXML
     private void handleDisconnect(ActionEvent event) {
-        client.closeConnection(); // Uzavře síťové spojení klienta
-        Platform.runLater(() -> { // UI aktualizace musí být na JavaFX Application Thread
+        client.closeConnection();
+        Platform.runLater(() -> {
             statusMessageLabel.setText("Disconnected from server.");
-            setMoveButtonsEnabled(false); // Zakáže herní tlačítka
-            disconnectButton.setDisable(true); // Zakáže i tlačítko pro odpojení
+            setMoveButtonsEnabled(false);
+            disconnectButton.setDisable(true);
             logger.info("Client disconnected.");
         });
     }
