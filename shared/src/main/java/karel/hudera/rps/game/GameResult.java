@@ -5,7 +5,7 @@ import java.io.Serializable;
  * To be Deleted
  * **/
 
-public class GameResult implements Serializable {
+public class GameResult extends GameMessage {
     private static final long serialVersionUID = 9L;
     private String player1;
     private String move1;
