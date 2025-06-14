@@ -31,31 +31,16 @@ import java.util.logging.Logger;
  */
 public class Client {
 
-    /**
-     * Logger instance for logging client activity
-     */
+    //logger
     private final Logger logger;
-
-    /**
-     * The socket used for communication with the server.
-     */
+    //soket
     private Socket socket;
-
-    /**
-     * Stream for sending objects to the server.
-     */
     private ObjectOutputStream output;
-
-    /**
-     * Stream for receiving objects from the server.
-     */
     private ObjectInputStream input;
     private String loggedInUsername = null;
 
     /**
-     * Constructs a new Client instance with a specified logger.
-     *
-     * @param logger The logger instance configured for logging to a file.
+     * Konstruktor
      */
     public Client(Logger logger) {
         this.logger = logger;
@@ -63,9 +48,7 @@ public class Client {
     private volatile boolean connected = false;
 
     /**
-     * Public method to check if the client is currently connected.
-     * This method was missing!
-     * @return true if connected, false otherwise.
+     * Kontrola připojení klienta.
      */
     public boolean isConnected() {
         return connected && (socket != null && !socket.isClosed() && socket.isConnected());
@@ -73,83 +56,80 @@ public class Client {
 
 
     /**
-     * Initializes the client connection to the specified server and port.
-     * <p>
-     * The client establishes a connection, prompts the user for a username,
-     * and continuously plays rounds of Rock-Paper-Scissors by sending moves
-     * and receiving results from the server.
-     * </p>
-     *
-     * @param serverAddress The address of the server to connect to.
-     * @param port          The port number on which the server is running.
-     */
-
-    /**
-     * Establishes a connection to the server and initializes object streams.
-     * This method should be called before attempting any communication.
-     * If already connected, it does nothing.
-     *
-     * @throws IOException If an I/O error occurs when creating the socket or streams.
+     * Naváže spojení se serverem na předem definované adrese a portu.
+     * Spustí I/O stream.
      */
     private void connect() throws IOException {
-        if (socket == null || socket.isClosed() || !socket.isConnected()) { // Přidána kontrola !socket.isConnected()
+        if (socket == null || socket.isClosed() || !socket.isConnected()) {
             logger.info("Attempting to connect to server at " + Constants.SERVER_ADDRESS + ":" + Constants.PORT);
             socket = new Socket(Constants.SERVER_ADDRESS, Constants.PORT);
             output = new ObjectOutputStream(socket.getOutputStream());
             input = new ObjectInputStream(socket.getInputStream());
             logger.info("Successfully connected to server and initialized streams.");
-            this.connected = true; // *** DŮLEŽITÉ: Nastavte na true po úspěšném připojení! ***
+            this.connected = true;
         } else {
             logger.info("Already connected or socket is still active.");
         }
     }
 
-
+    /**
+     * Odesílá 'LoginRequest' na server a očekává 'LoginResponse'
+     *
+     * Parametry:
+     *    - username: Uživatelské jméno pro autentizaci.
+     *    - password: Heslo pro autentizaci (aktuálně se neposílá na server v LoginRequest).
+     *
+     * Vrátí:
+     *    - boolean: 'true', pokud je autentizace úspěšná; jinak 'false'.
+     * **/
     public boolean authenticate(String username, String password) {
         try {
-            connect(); // Zajistíme, že jsme připojeni k serveru
+            connect();
 
-            // Vytvoříme a pošleme LoginRequest objekt
             LoginRequest request = new LoginRequest(username, password);
-            logger.info(Constants.LOG_AUTH_ATTEMPT + username); // Používáme vaši konstantu
+            logger.info(Constants.LOG_AUTH_ATTEMPT + username);
             output.writeObject(request);
-            output.flush(); // Důležité pro okamžité odeslání dat
+            output.flush();
 
-            // Přečteme odpověď od serveru
             Object responseObj = input.readObject();
 
             if (responseObj instanceof LoginResponse) {
                 LoginResponse response = (LoginResponse) responseObj;
                 if (response.isSuccess()) {
-                    this.loggedInUsername = username; // Uložíme přihlášené jméno
-                    logger.info(Constants.LOG_AUTH_SUCCESS + username); // Používáme vaši konstantu
+                    this.loggedInUsername = username;
+                    logger.info(Constants.LOG_AUTH_SUCCESS + username);
                     return true;
                 } else {
-                    logger.warning(Constants.LOG_AUTH_FAIL + username + ": " + response.getMessage()); // Používáme vaši konstantu
-                    // Serverová zpráva již obsahuje důvod selhání.
-                    // V tomto případě spojení nezavírám, aby mohl uživatel zkusit znovu přihlášení.
+                    logger.warning(Constants.LOG_AUTH_FAIL + username + ": " + response.getMessage());
                     return false;
                 }
             } else {
-                logger.log(Level.SEVERE, Constants.ERROR_LOGIN_FAILED + " Received unexpected object type during login: " + responseObj.getClass().getName()); // Používáme vaši konstantu
-                closeConnection(); // V případě neočekávané zprávy bychom měli spojení ukončit
+                logger.log(Level.SEVERE, Constants.ERROR_LOGIN_FAILED + " Received unexpected object type during login: " + responseObj.getClass().getName());
+                closeConnection();
                 return false;
             }
 
         } catch (IOException | ClassNotFoundException e) {
-            logger.log(Level.SEVERE, Constants.ERROR_LOGIN_FAILED + e.getMessage(), e); // Používáme vaši konstantu
-            closeConnection(); // Při chybě spojení zavřeme
+            logger.log(Level.SEVERE, Constants.ERROR_LOGIN_FAILED + e.getMessage(), e);
+            closeConnection();
             return false;
         }
     }
+
+
+    /**
+     * Přečte jeden objekt (očekává se 'GameMessage') ze vstupního proudu serveru.
+     * Loguje typ přijaté zprávy.
+     * Vrací přijatou zprávu nebo null.
+     * **/
     public GameMessage readServerMessage() throws IOException, ClassNotFoundException {
         if (input != null) {
             Object obj = input.readObject();
             if (obj instanceof GameMessage) {
-                logger.info(String.format(Constants.LOG_RECEIVED_MESSAGE + " %s", obj.getClass().getSimpleName())); // Používáme vaši konstantu
+                logger.info(String.format(Constants.LOG_RECEIVED_MESSAGE + " %s", obj.getClass().getSimpleName()));
                 return (GameMessage) obj;
             } else {
-                logger.warning(String.format(Constants.LOG_RECEIVED_MESSAGE + " Unexpected type: %s", obj.getClass().getName())); // Používáme vaši konstantu
+                logger.warning(String.format(Constants.LOG_RECEIVED_MESSAGE + " Unexpected type: %s", obj.getClass().getName()));
                 return null;
             }
         }
@@ -157,14 +137,12 @@ public class Client {
     }
 
     /**
-     * Sends a GameMessage object to the server.
-     *
-     * @param message The GameMessage object to send.
-     * @throws IOException If an I/O error occurs during writing.
+     * Odešle objekt 'GameMessage' na server prostřednictvím výstupního proudu.
+     * Zaloguje informace o odeslané zprávě.
      */
     public void sendToServer(GameMessage message) throws IOException {
         if (output != null) {
-            logger.info(String.format("📤 Client sent message to server: %s - %s", message.getClass().getSimpleName(), message.toString())); // Používáme vaši konstantu, ale pro klienta je to vlastně "odesláno na server"
+            logger.info(String.format("📤 Client sent message to server: %s - %s", message.getClass().getSimpleName(), message.toString()));
             output.writeObject(message);
             output.flush();
         } else {
@@ -172,38 +150,24 @@ public class Client {
         }
     }
 
-    /**
-     * Returns the username of the currently logged-in user.
-     *
-     * @return The logged-in username, or null if no user is logged in.
-     */
-    public String getLoggedInUsername() {
-        return loggedInUsername;
-    }
 
     /**
-     * Closes the client connection and releases resources.
-     * <p>
-     * Ensures the socket and streams are properly closed to avoid resource leaks.
-     * </p>
+     * Bezpečně uzavře klientské spojení se serverem a uvolní všechny související sockety a proudy.
+     * Psílá zprávu o ukončení spojení serveru.
      */
     public void closeConnection() {
         try {
-            // Krok 1: Odeslat TerminateMessage serveru, POKUD JE SPOJENÍ AKTIVNÍ A VÝSTUPNÍ STREAM JE K DISPOZICI
             if (output != null && socket != null && !socket.isClosed()) {
                 try {
                     TerminateMessage terminateMessage = new TerminateMessage();
                     output.writeObject(terminateMessage);
-                    output.flush(); // Důležité pro okamžité odeslání zprávy
+                    output.flush();
                     logger.info("Sent TerminateMessage to server.");
                 } catch (IOException e) {
-                    // Logujeme chybu, ale pokračujeme v pokusu o uzavření spojení,
-                    // protože zpráva se možná už neodeslala kvůli problému s IO.
                     logger.log(Level.WARNING, "Failed to send TerminateMessage before closing: " + e.getMessage());
                 }
             }
 
-            // Krok 2: Uzavřít socket a streamy
             if (socket != null && !socket.isClosed()) {
                 socket.close();
                 logger.info("Socket closed.");
@@ -223,11 +187,10 @@ public class Client {
         } catch (IOException e) {
             logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR + ": " + e.getMessage(), e);
         } finally {
-            // Krok 3: Vyčistit reference
             socket = null;
             input = null;
             output = null;
-            loggedInUsername = null; // Pokud chcete resetovat i jméno uživatele
+            loggedInUsername = null;
         }
     }
 }

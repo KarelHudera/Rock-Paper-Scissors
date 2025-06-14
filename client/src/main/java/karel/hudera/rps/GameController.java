@@ -12,14 +12,12 @@ import javafx.util.Duration;
 import karel.hudera.rps.client.Client;
 import karel.hudera.rps.constants.Constants;
 import karel.hudera.rps.game.*;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import karel.hudera.rps.StartClient;
+
 
 
 public class GameController implements Initializable {
@@ -33,8 +31,7 @@ public class GameController implements Initializable {
     @FXML private Label opponentScoreLabel;
     @FXML private Label roundResultLabel;
     @FXML private Label waitingForOpponentMoveLabel;
-
-    //final results
+    //round result
     @FXML private VBox resultOverlayContainer;
     @FXML private Label finalYourMoveLabel;
     @FXML private Label finalOpponentMoveLabel;
@@ -65,10 +62,6 @@ public class GameController implements Initializable {
 
     public GameController() {}
 
-    /**
-     * Initializes the controller after its root element has been completely processed.
-     * Sets initial UI visibility and starts the thread for listening to server messages.
-     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -89,6 +82,9 @@ public class GameController implements Initializable {
         setMoveButtonsEnabled(false);
     }
 
+    /**
+     * Spouští vlákno pro poslech zpráv, řeší vyjímky, neznámé objekty, přerušení vlákna...
+     * **/
     private void startMessageListener() {
         logger.info("GameController: Entering startMessageListener. Value of 'this.client' is: " + (this.client != null ? "NOT NULL" : "NULL"));
 
@@ -97,7 +93,7 @@ public class GameController implements Initializable {
             logger.info("GameController: CHECKING client.isConnected() BEFORE THREAD START: " + this.client.isConnected());
         } else {
             logger.severe("GameController: client is NULL when trying to check isConnected() before thread start. This is unexpected.");
-            return; // Zastavit, pokud je client null
+            return;
         }
 
 
@@ -137,6 +133,10 @@ public class GameController implements Initializable {
         }, "ClientMessageListener").start();
     }
 
+    /**
+     * Zpracuje přijatou zprávu od serveru s výsledkem kola.
+     * Podle toho, jetli se bude hrát ještě jedno kolo, se zobrazí příslušný overlay okna.
+     * **/
     private void handleIncomingMessage(GameMessage message) {
         logger.info("Received message in GameController: " + message.getClass().getSimpleName() + " - " + message.toString());
 
@@ -235,6 +235,9 @@ public class GameController implements Initializable {
         } }
     }
 
+    /**
+    *  Logika po vybrání Move hráčem, oděšle serveru vyhraný move a následně zablokuje button a zobrazí overlay
+     * **/
     @FXML
     private void handleMove(ActionEvent event) {
         Button clickedButton = (Button) event.getSource();
@@ -292,19 +295,27 @@ public class GameController implements Initializable {
         });
     }
 
+    /**
+     * Viditelnost Rock Paper Sciccors buttons
+     * **/
     private void setMoveButtonsEnabled(boolean enabled) {
         rockButton.setDisable(!enabled);
         paperButton.setDisable(!enabled);
         scissorsButton.setDisable(!enabled);
     }
 
-    // Veřejná setter metoda pro přijetí instance Klienta
+    /**
+     * Použito při předávání instance klienta LoginControllerem
+     * **/
     public void setClient(karel.hudera.rps.client.Client client) {
         this.client = client;
         startMessageListener();
     }
 
 
+    /**
+     * Logika pro button po skončení hry s oponentem
+     * **/
     public void handlePlayAgain(ActionEvent actionEvent) {
         logger.info("Play again");
     }
