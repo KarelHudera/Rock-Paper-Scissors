@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="feat: plyers play their move">
+    <list default="true" id="c0e11dc7-5909-4fa0-b912-186c201bf1ba" name="Changes" comment="fix: enum sent in gameMove">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -213,7 +213,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749827090398</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="fix: enum sent in gameMove">
+      <option name="closed" value="true" />
+      <created>1749833123231</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1749833123231</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -230,6 +238,7 @@
     <MESSAGE value="feat: players pairing" />
     <MESSAGE value="fix: protocol" />
     <MESSAGE value="feat: plyers play their move" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: plyers play their move" />
+    <MESSAGE value="fix: enum sent in gameMove" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: enum sent in gameMove" />
   </component>
 </project>
