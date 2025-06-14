@@ -116,7 +116,7 @@
         </HBox>
     </VBox>
 
-    <HBox alignment="TOP_RIGHT" StackPane.alignment="TOP_RIGHT" mouseTransparent="true">
+    <HBox alignment="TOP_RIGHT" StackPane.alignment="TOP_RIGHT">
         <padding>
             <Insets top="15" right="15"/>
         </padding>
