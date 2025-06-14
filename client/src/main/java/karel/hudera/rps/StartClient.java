@@ -42,4 +42,5 @@ public class StartClient extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
 }

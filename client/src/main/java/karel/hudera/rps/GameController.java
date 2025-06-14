@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import karel.hudera.rps.StartClient;
 
 
 public class GameController implements Initializable {
@@ -44,6 +45,10 @@ public class GameController implements Initializable {
     private VBox gameContentContainer;
     @FXML
     private VBox waitingOverlayContainer;
+    //final result
+    @FXML private VBox finalResultOverlayContainer;
+    @FXML private Label finalGameOutcomeLabel;
+    @FXML private Label finalGameScoreLabel;
 
     @FXML private Button rockButton;
     @FXML private Button paperButton;
@@ -57,6 +62,8 @@ public class GameController implements Initializable {
     // Skóre
     private int yourScore = 0;
     private int opponentScore = 0;
+    private final int CLIENT_MAX_ROUNDS = 3; // <-- Hardcode na klientovi, podle serveru
+    private int clientCurrentRound = 0;
 
     public GameController() {}
 
@@ -70,6 +77,8 @@ public class GameController implements Initializable {
         gameContentContainer.setVisible(true);
         waitingOverlayContainer.setVisible(false);
         resultOverlayContainer.setVisible(false);
+        finalResultOverlayContainer.setVisible(false);
+        clientCurrentRound = 0;
 
         yourUsernameLabel.setText(loggedInUsername);
         statusMessageLabel.setText(Constants.WAITING_FOR_OPPONENT); // "Waiting for opponent..."
@@ -152,11 +161,15 @@ public class GameController implements Initializable {
         } else if (message instanceof RoundResult) {
             RoundResult roundResult = (RoundResult) message;
 
-            // Aktualizace skóre
-            yourScore = roundResult.getPlayer1Score(); // Předpokládám, že player1Score je tvé
-            opponentScore = roundResult.getPlayer2Score(); // Předpokládám, že player2Score je soupeře
+            yourScore = roundResult.getPlayer1Score();
+            opponentScore = roundResult.getPlayer2Score();
             yourScoreLabel.setText(String.valueOf(yourScore));
             opponentScoreLabel.setText(String.valueOf(opponentScore));
+
+            // Zobrazení tahů
+            finalYourMoveLabel.setText("You: " + roundResult.getYourMove().name());
+            finalOpponentMoveLabel.setText("Opponent: " + roundResult.getOpponentMove().name());
+
 
             // Zobrazení výsledku kola
             String resultText = "";
@@ -172,32 +185,56 @@ public class GameController implements Initializable {
             }
             finalRoundResultLabel.setText(resultText);
 
-            // Aktualizuj globální skóre a labely na hlavní obrazovce, nebo jen na výsledkovém overlayi
-            yourScore = roundResult.getPlayer1Score();
-            opponentScore = roundResult.getPlayer2Score();
-            yourScoreLabel.setText(String.valueOf(yourScore));
-            opponentScoreLabel.setText(String.valueOf(opponentScore));
-            finalScoreLabel.setText(String.format("Score: You %d - Opponent %d", yourScore, opponentScore));
-
-
             // Skryj herní a čekací overlay, zobraz výsledkový overlay
             gameContentContainer.setVisible(false);
             waitingOverlayContainer.setVisible(false);
-            resultOverlayContainer.setVisible(true);
+            resultOverlayContainer.setVisible(true); // Zobrazíme krátký overlay pro výsledek kola
 
-            // Nastav timer pro automatický návrat do stavu výběru tahu
-            PauseTransition delay = new PauseTransition(Duration.seconds(2)); // Zobraz výsledek na 2 sekundy
-            delay.setOnFinished(event -> {
-                resultOverlayContainer.setVisible(false); // Skryj výsledkový overlay
-                gameContentContainer.setVisible(true);   // Zobraz hlavní herní obrazovku
-                waitingForOpponentMoveLabel.setText("Pick your move for the next round!"); // Nastav pro další kolo
-                roundResultLabel.setText(""); // Vyčisti minulý výsledek z hlavního labelu
-                setMoveButtonsEnabled(true); // Povol tlačítka pro tah
-            });
-            delay.play();
-        } else {
-            logger.warning("Unhandled message type received: " + message.getClass().getSimpleName());
-        }
+            setMoveButtonsEnabled(false); // Zakážeme tlačítka pro dobu zobrazení výsledku
+
+            clientCurrentRound++; // Inkrementuj počítadlo kol klienta
+
+            if (clientCurrentRound < CLIENT_MAX_ROUNDS) { // Pokud nejsme u posledního kola
+                // Nastav timer pro automatický návrat do stavu výběru tahu (pro další kolo)
+                PauseTransition delay = new PauseTransition(Duration.seconds(2)); // Zobraz výsledek na 2 sekundy
+                delay.setOnFinished(event -> {
+                    resultOverlayContainer.setVisible(false); // Skryj výsledkový overlay
+                    gameContentContainer.setVisible(true);   // Zobraz hlavní herní obrazovku
+                    waitingForOpponentMoveLabel.setText("Pick your move for round " + (clientCurrentRound + 1) + "!");
+                    roundResultLabel.setText(""); // Vyčisti minulý výsledek z hlavního labelu
+                    setMoveButtonsEnabled(true); // Povol tlačítka pro tah
+                });
+                delay.play();
+            } else { // Jsme po posledním kole! Zobraz finální výsledek.
+                PauseTransition finalDelay = new PauseTransition(Duration.seconds(3)); // Nech výsledek kola viditelný déle
+                finalDelay.setOnFinished(event -> {
+                    // Skryj všechny herní overlaye
+                    gameContentContainer.setVisible(false);
+                    waitingOverlayContainer.setVisible(false);
+                    resultOverlayContainer.setVisible(false);
+
+                    // Zobraz finální výsledkový overlay
+                    finalResultOverlayContainer.setVisible(true);
+
+                    // Urči celkový výsledek hry
+                    String finalOutcomeText;
+                    String finalOutcomeStyle = "";
+                    if (yourScore > opponentScore) {
+                        finalOutcomeText = "YOU WIN THE GAME!";
+                        finalOutcomeStyle = "-fx-text-fill: #28a745;"; // Zelená pro WIN
+                    } else if (opponentScore > yourScore) {
+                        finalOutcomeText = "YOU LOSE THE GAME!";
+                        finalOutcomeStyle = "-fx-text-fill: #dc3545;"; // Červená pro LOSE
+                    } else {
+                        finalOutcomeText = "IT'S A TIE GAME!";
+                        finalOutcomeStyle = "-fx-text-fill: #ffc107;"; // Oranžová pro DRAW
+                    }
+                    finalGameOutcomeLabel.setText(finalOutcomeText);
+                    finalGameOutcomeLabel.setStyle(finalOutcomeStyle);
+                    finalGameScoreLabel.setText(String.format("Final Score: You %d - Opponent %d", yourScore, opponentScore));
+                });
+                finalDelay.play();
+        } }
     }
 
     @FXML
@@ -264,6 +301,11 @@ public class GameController implements Initializable {
     public void setClient(karel.hudera.rps.client.Client client) {
         this.client = client;
         startMessageListener();
+    }
+
+
+    public void handlePlayAgain(ActionEvent actionEvent) {
+        logger.info("Play again");
     }
 }
 
