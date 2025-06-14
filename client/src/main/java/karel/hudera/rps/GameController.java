@@ -282,11 +282,11 @@ public class GameController implements Initializable {
 
     @FXML
     private void handleDisconnect(ActionEvent event) {
-        client.closeConnection();
-        Platform.runLater(() -> {
+        client.closeConnection(); // Uzavře síťové spojení klienta
+        Platform.runLater(() -> { // UI aktualizace musí být na JavaFX Application Thread
             statusMessageLabel.setText("Disconnected from server.");
-            setMoveButtonsEnabled(false);
-            disconnectButton.setDisable(true);
+            setMoveButtonsEnabled(false); // Zakáže herní tlačítka
+            disconnectButton.setDisable(true); // Zakáže i tlačítko pro odpojení
             logger.info("Client disconnected.");
         });
     }

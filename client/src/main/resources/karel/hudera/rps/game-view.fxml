@@ -68,9 +68,6 @@
 
         <Label fx:id="waitingForOpponentMoveLabel" text="Pick your move!" styleClass="game-instruction-label"/>
 
-        <HBox alignment="CENTER" spacing="10">
-            <Button fx:id="disconnectButton" text="Disconnect" onAction="#handleDisconnect" styleClass="game-disconnect-button"/>
-        </HBox>
     </VBox>
 
     <VBox fx:id="waitingOverlayContainer" alignment="CENTER" visible="false" styleClass="waiting-overlay-container">
@@ -118,5 +115,12 @@
             <Button text="Play Again" onAction="#handlePlayAgain" styleClass="final-result-button"/>
         </HBox>
     </VBox>
+
+    <HBox alignment="TOP_RIGHT" StackPane.alignment="TOP_RIGHT">
+        <padding>
+            <Insets top="15" right="15"/>
+        </padding>
+        <Button fx:id="disconnectButton" text="Disconnect" onAction="#handleDisconnect" styleClass="game-disconnect-button"/>
+    </HBox>
 
 </StackPane>

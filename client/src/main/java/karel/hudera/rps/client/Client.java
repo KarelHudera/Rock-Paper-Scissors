@@ -189,24 +189,45 @@ public class Client {
      */
     public void closeConnection() {
         try {
+            // Krok 1: Odeslat TerminateMessage serveru, POKUD JE SPOJENÍ AKTIVNÍ A VÝSTUPNÍ STREAM JE K DISPOZICI
+            if (output != null && socket != null && !socket.isClosed()) {
+                try {
+                    TerminateMessage terminateMessage = new TerminateMessage();
+                    output.writeObject(terminateMessage);
+                    output.flush(); // Důležité pro okamžité odeslání zprávy
+                    logger.info("Sent TerminateMessage to server.");
+                } catch (IOException e) {
+                    // Logujeme chybu, ale pokračujeme v pokusu o uzavření spojení,
+                    // protože zpráva se možná už neodeslala kvůli problému s IO.
+                    logger.log(Level.WARNING, "Failed to send TerminateMessage before closing: " + e.getMessage());
+                }
+            }
+
+            // Krok 2: Uzavřít socket a streamy
             if (socket != null && !socket.isClosed()) {
                 socket.close();
+                logger.info("Socket closed.");
             }
             if (input != null) {
                 input.close();
+                logger.info("Input stream closed.");
             }
             if (output != null) {
                 output.close();
+                logger.info("Output stream closed.");
             }
-            logger.info(Constants.LOG_CLIENT_CLOSED); // Používáme vaši konstantu
+
+            logger.info(Constants.LOG_CLIENT_CLOSED);
             this.connected = false;
+
         } catch (IOException e) {
-            logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR + ": " + e.getMessage(), e); // Používáme vaši konstantu
+            logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR + ": " + e.getMessage(), e);
         } finally {
+            // Krok 3: Vyčistit reference
             socket = null;
             input = null;
             output = null;
-            loggedInUsername = null;
+            loggedInUsername = null; // Pokud chcete resetovat i jméno uživatele
         }
     }
 }
