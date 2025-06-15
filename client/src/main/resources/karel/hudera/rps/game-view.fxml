@@ -35,9 +35,9 @@
         <Label fx:id="roundResultLabel" text="" styleClass="game-round-result-label"/>
 
         <HBox fx:id="moveButtonsContainer" alignment="CENTER" spacing="20">
-            <Button fx:id="rockButton" onAction="#handleMove" disable="true" styleClass="game-image-button">
+            <Button fx:id="rockButton" onAction="#handleMove" disable="true" styleClass="game-image-button" text="rock">
                 <graphic>
-                    <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
+                    <ImageView fitWidth="100" fitHeight="100">
                         <image>
                             <Image url="@images/rock.png"/>
                         </image>
@@ -45,9 +45,9 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="paperButton" onAction="#handleMove" disable="true" styleClass="game-image-button">
+            <Button fx:id="paperButton" onAction="#handleMove" disable="true" styleClass="game-image-button" text="paper">
                 <graphic>
-                    <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
+                    <ImageView fitWidth="100" fitHeight="100">
                         <image>
                             <Image url="@images/paper.png"/>
                         </image>
@@ -55,9 +55,9 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="scissorsButton" onAction="#handleMove" disable="true" styleClass="game-image-button">
+            <Button fx:id="scissorsButton" onAction="#handleMove" disable="true" styleClass="game-image-button" text="scissors">
                 <graphic>
-                    <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
+                    <ImageView fitWidth="100" fitHeight="100">
                         <image>
                             <Image url="@images/scissors.png"/>
                         </image>
@@ -116,11 +116,12 @@
         </HBox>
     </VBox>
 
-    <HBox alignment="TOP_RIGHT" StackPane.alignment="TOP_RIGHT">
-        <padding>
+    <Button fx:id="disconnectButton" text="Disconnect" onAction="#handleDisconnect"
+            styleClass="game-disconnect-button" mouseTransparent="false"
+            StackPane.alignment="TOP_RIGHT">
+        <StackPane.margin>
             <Insets top="15" right="15"/>
-        </padding>
-        <Button fx:id="disconnectButton" text="Disconnect" onAction="#handleDisconnect" styleClass="game-disconnect-button" mouseTransparent="false"/>
-    </HBox>
+        </StackPane.margin>
+    </Button>
 
 </StackPane>

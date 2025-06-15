@@ -12,119 +12,97 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import karel.hudera.rps.client.Client;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class LoginController {
 
+    //logger a instance klienta
+    private static final Logger logger = Logger.getLogger("ClientLogger");
+    private Client gameClient;
+
+    //UI prvky
     @FXML
     private TextField usernameField;
-
     @FXML
     private PasswordField passwordField;
-
     @FXML
-    private Label errorLabel, successLabel; // Labels to display error and success messages
-
+    private Label errorLabel, successLabel;
     @FXML
-    private StackPane errorBox, successBox, messageContainer; // Containers for error and success messages, and a general message container
-
+    private StackPane errorBox, successBox, messageContainer;
     @FXML
     private Button loginButton;
-    private Client gameClient; // Client instance for communicating with the game server
 
-    private static final Logger logger = Logger.getLogger("ClientLogger");
-    private Client client;
-
-    /**
-     * Initializes the controller after its root element has been completely processed.
-     * Sets up listeners to hide messages when input fields are typed into and initializes the game client.
-     */
     @FXML
     private void initialize() {
-        // Hide messages dynamically when typing
+        // Schovat placeholder text
         usernameField.textProperty().addListener((observable, oldValue, newValue) -> hideMessages());
         passwordField.textProperty().addListener((observable, oldValue, newValue) -> hideMessages());
 
-        // Ensure the container starts empty
         messageContainer.setVisible(false);
         gameClient = new Client(logger);
     }
 
     /**
-     * Handles the action when the login button is clicked.
-     * Validates input, disables the login button, and initiates an asynchronous authentication task.
+     * Ovláda co se stane po kliknutí na Login button v UI klienta.
+     * Získá a ořeže uživatelské jméno a heslo uživatele.
+     * Zablokuje možnost vykonat další akci v UI uživateli.
+     * Pošle zprávu s údaji serveru a vyhodnotí příchozí zprávu od serveru.
      */
     @FXML
     private void onLoginButtonClick() {
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim(); // Prozatím se heslo na server neposílá
 
-        if (username.isEmpty()) { // Heslo není povinné pro LoginRequest
+        // Username je povinné
+        if (username.isEmpty()) {
             showMessage(errorBox, errorLabel, "Username cannot be empty.");
             return;
         }
 
         // Zablokujeme tlačítko, aby se zabránilo vícenásobnému kliknutí
         loginButton.setDisable(true);
-        showMessage(successBox, successLabel, "Attempting to log in..."); // Zpráva pro uživatele
+        showMessage(successBox, successLabel, "Attempting to log in...");
 
-        // Vytvoříme Task pro asynchronní volání autentizace
+        // Asynchronní volání autentizace
         Task<Boolean> loginTask = new Task<>() {
-            String loginMessage = ""; // Pro zprávu ze serveru
+            String loginMessage = "";
 
             @Override
-            protected Boolean call() throws Exception {
-                // Tato část se spustí na pozadí (jiném vlákně)
+            protected Boolean call() {
                 boolean success = gameClient.authenticate(username, password);
                 if (!success) {
-                    // hardcoded
                     loginMessage = "Login failed. Invalid username or other error.";
                 }
                 return success;
             }
         };
 
-        // Set the callback for when the login task succeeds
+        // Callback pro úspěšný login
         loginTask.setOnSucceeded(event -> {
-            // Tato část se spustí na JavaFX Application Thread
-            loginButton.setDisable(false); // Povolíme tlačítko zpět
-            if (loginTask.getValue()) { // .getValue() vrátí výsledek z call()
+            loginButton.setDisable(false);
+            if (loginTask.getValue()) {
                 showMessage(successBox, successLabel, "Login successful!");
                 proceedToGameScreen();
             } else {
-                showMessage(errorBox, errorLabel, loginTask.getMessage()); // Zobrazí zprávu z úlohy
-                gameClient.closeConnection(); // Důležité: zavřeme spojení, pokud login selhal
+                showMessage(errorBox, errorLabel, loginTask.getMessage());
+                gameClient.closeConnection();
             }
         });
 
-        // Set the callback for when the login task fails with an exception
+        // Callback pro failed login
         loginTask.setOnFailed(event -> {
-            // Tato část se spustí na JavaFX Application Thread, pokud Task selže s výjimkou
-            loginButton.setDisable(false); // Povolíme tlačítko zpět
+            loginButton.setDisable(false);
             logger.log(Level.SEVERE, "Login task failed: " + loginTask.getException().getMessage(), loginTask.getException());
             showMessage(errorBox, errorLabel, "An unexpected error occurred during login. See logs.");
-            gameClient.closeConnection(); // Zavřeme spojení
+            gameClient.closeConnection();
         });
-
-        // Nastavíme zprávu, kterou úloha použije, pokud selže
-        loginTask.messageProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.isEmpty()) {
-                // Tato zpráva se aktualizuje z call() metody, pokud je nastavena
-                // (pro naši implementaci loginu ji možná nebudeme přímo používat,
-                // ale je to dobrý vzor pro složitější Tasks)
-                //TODO asi smazat
-            }
-        });
-
-        // Spustíme úlohu na novém vlákně
         new Thread(loginTask).start();
     }
 
     /**
-     * Initiates a short delay before navigating to the game screen, providing a smoother transition.
+     * Přechod na herní obrazovku
      */
     private void proceedToGameScreen() {
         PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
@@ -133,8 +111,8 @@ public class LoginController {
     }
 
     /**
-     * Loads the game view FXML and displays it, replacing the login view.
-     * Passes the game client instance to the new game controller.
+     * Načte a zobrazí FXML, nahradí předchozí zobrazené FXML.
+     * Předává GameControlleru instanci klienta, tím zachová spojení.
      */
     private void navigateToGameScreen() {
         try {
@@ -145,43 +123,35 @@ public class LoginController {
             logger.info("LoginController: gameClient instance before passing to GameController: " + (this.gameClient != null ? "NOT NULL" : "NULL"));
             gameController.setClient(this.gameClient);
 
-            Stage stage = (Stage) usernameField.getScene().getWindow(); // Nahraďte 'someButton' existujícím prvkem UI
+            Stage stage = (Stage) usernameField.getScene().getWindow();
             Scene scene = new Scene(gameView,  600, 400);
             stage.setScene(scene);
-            stage.setTitle("Rock-Paper-Scissors Game"); // Nebo váš titul
+            stage.setTitle("Rock-Paper-Scissors Game");
             stage.show();
 
         } catch (IOException e) {
             logger.severe("Failed to load game-view.fxml: " + e.getMessage());
             e.printStackTrace();
             showMessage(errorBox, errorLabel, "Failed to load game. Please restart.");
-            gameClient.closeConnection(); // Zavřeme spojení, pokud se nepodaří načíst hru
+            gameClient.closeConnection();
         }
     }
 
     /**
-     * Displays a message in the specified message box and label, with a fade-in animation.
-     * Hides other message boxes before displaying the new one.
-     *
-     * @param box The StackPane container for the message (e.g., errorBox, successBox).
-     * @param label The Label inside the box to display the message text.
-     * @param message The text message to display.
+     * Zobrazí textovou zprávu v zadaném kontejneru a popisku.
      */
-    // Zobrazení a skrytí zpráv
     private void showMessage(StackPane box, Label label, String message) {
-        // Skrýt všechny zprávy nejprve
         errorBox.setVisible(false);
         successBox.setVisible(false);
-        messageContainer.setVisible(true); // Zajistí, že kontejner je viditelný
+        messageContainer.setVisible(true);
 
         label.setText(message);
         box.setVisible(true);
-        // Fade-in efekt na celém boxu (ne jen labelu pro lepší vizuál)
         fadeIn(box);
     }
 
     /**
-     * Hides all message boxes (error and success) and the general message container.
+     * Skryje všechny kontejnery zpráv (chybové, úspěšné) a také hlavní kontejner zpráv.
      */
     private void hideMessages() {
         messageContainer.setVisible(false);
@@ -190,12 +160,10 @@ public class LoginController {
     }
 
     /**
-     * Applies a fade-in animation to the given StackPane.
-     *
-     * @param box The StackPane to apply the fade-in effect to.
+     * Animace StackPane
      */
-    private void fadeIn(StackPane box) { // Změněno z Label na StackPane
-        box.setOpacity(0); // Začínáme s plně průhledným
+    private void fadeIn(StackPane box) {
+        box.setOpacity(0);
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), box);
         fadeIn.setToValue(1);
         fadeIn.play();

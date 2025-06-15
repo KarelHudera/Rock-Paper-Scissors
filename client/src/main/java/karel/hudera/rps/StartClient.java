@@ -12,13 +12,9 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- * Entry point for starting the Rock-Paper-Scissors client.
- * <p>
- * This class initializes and connects the client to the server running on <b>localhost:9090</b>.
- * It also configures logging for better debugging and monitoring.
- * </p>
- *
- * @author Karel Hudera
+ *      Toto je hlavní spouštěcí třída pro klientskou JavaFX aplikaci.
+ *      Inicializuje logovací systém, tvoří instanci herního klienta
+ *      a nastavuje a zobrazuje počáteční uživatelské rozhraní (přihlašovací obrazovku).
  */
 public class StartClient extends Application {
 
@@ -29,11 +25,14 @@ public class StartClient extends Application {
         Logging.configureLogger(logger, Constants.LOG_FILE_C);
 
         Client client = new Client(logger);
-        //client.initialize("localhost", Constants.PORT);
 
-        launch(); // This starts the JavaFX application
+        launch();
     }
 
+    /**
+     * Přepsaná metoda z třídy Application.
+     * Je zodpovědná za sestavení a zobrazení počátečního uživatelského rozhraní.
+     * **/
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(StartClient.class.getResource("login-view.fxml"));
