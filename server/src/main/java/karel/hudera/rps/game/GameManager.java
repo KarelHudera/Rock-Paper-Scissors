@@ -40,14 +40,13 @@ public class GameManager {
     private final ExecutorService gameExecutor;
 
     /**
-     * Private constructor for singleton pattern.
+     * Private constructor for a singleton pattern.
      */
     private GameManager() {
         this.waitingPlayers = new ConcurrentLinkedQueue<>();
         this.activeSessions = Collections.synchronizedList(new ArrayList<>());
 
-        // Create a thread pool with a reasonable number of threads
-        // For 2000 concurrent players (1000 games), a smaller pool is still efficient
+        // Thread pool
         this.gameExecutor = Executors.newFixedThreadPool(100);
 
         // Start the matchmaking thread
@@ -82,7 +81,6 @@ public class GameManager {
      */
     public void addWaitingPlayer(ClientHandler clientHandler) {
         waitingPlayers.add(clientHandler);
-//        clientHandler.sendMessage(Constants.MSG_WAITING_FOR_OPPONENT);
         logger.info(String.format(Constants.LOG_PLAYER_WAITING, clientHandler.getClientInfo()));
     }
 
@@ -90,14 +88,12 @@ public class GameManager {
      * Removes a player from the waiting queue.
      *
      * @param clientHandler The client handler for the player to remove
-     * @return true if the player was in the queue, false otherwise
      */
-    public boolean removeWaitingPlayer(ClientHandler clientHandler) {
+    public void removeWaitingPlayer(ClientHandler clientHandler) {
         boolean removed = waitingPlayers.remove(clientHandler);
         if (removed) {
             logger.info(String.format(Constants.LOG_PLAYER_LEFT_QUEUE, clientHandler.getClientInfo()));
         }
-        return removed;
     }
 
     /**
@@ -204,33 +200,5 @@ public class GameManager {
                 logger.severe(String.format(Constants.ERROR_CLEANUP_FAILURE, e.getMessage()));
             }
         }
-    }
-
-    /**
-     * Gets the number of players currently waiting for a game.
-     *
-     * @return The number of waiting players
-     */
-    public int getWaitingPlayersCount() {
-        return waitingPlayers.size();
-    }
-
-    /**
-     * Gets the number of active game sessions.
-     *
-     * @return The number of active sessions
-     */
-    public int getActiveSessionsCount() {
-        synchronized (activeSessions) {
-            return activeSessions.size();
-        }
-    }
-
-    /**
-     * Shuts down the game manager and its resources.
-     */
-    public void shutdown() {
-        gameExecutor.shutdownNow();
-        logger.info(Constants.LOG_GAME_MANAGER_SHUTDOWN);
     }
 }

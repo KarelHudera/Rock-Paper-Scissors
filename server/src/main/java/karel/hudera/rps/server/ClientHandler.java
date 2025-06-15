@@ -1,18 +1,16 @@
 package karel.hudera.rps.server;
 
+import karel.hudera.rps.auth.LoginService;
 import karel.hudera.rps.constants.Constants;
 import karel.hudera.rps.game.*;
 import karel.hudera.rps.utils.ServerLogger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
 
 /**
  * Handles communication between the server and a connected client in the Rock-Paper-Scissors game.
@@ -63,26 +61,16 @@ public class ClientHandler implements Runnable {
             objectOut = new ObjectOutputStream(clientSocket.getOutputStream());
             objectIn = new ObjectInputStream(clientSocket.getInputStream());
 
-            Object initialMessage = objectIn.readObject(); // <-- Server čeká na PRVNÍ zprávu, která by měla být LoginRequest
-            if (!(initialMessage instanceof LoginRequest)) {
-                logger.warning("Received unexpected first message from client: " + initialMessage.getClass().getName());
-                // Můžeš poslat LoginResponse(false, "Unexpected initial message")
-                sendMessage(new LoginResponse(false, "Niočekávaná první zpráva."));
-                return; // Ukončit zpracování pro tohoto klienta
+            LoginService loginService = new LoginService();
+            String authenticatedUsername = loginService.authenticate(objectIn, objectOut, getClientInfo());
+
+            if (authenticatedUsername == null) {
+                logger.warning("Authentication failed for client: " + getClientInfo());
+                return;
             }
-
-            LoginRequest loginRequest = (LoginRequest) initialMessage;
-            this.username = loginRequest.getUsername();
-            logger.info("Received LOGIN request from " + username + " at " + getClientInfo());
-
-            // PROTOKOL: Server posílá LOGIN_RESPONSE
-            LoginResponse loginResponse = new LoginResponse(true, "Connected to RPS server"); // Můžeš použít Constants.WELCOME_MESSAGE
-            sendMessage(loginResponse);
-            logger.info("Sent LOGIN_RESPONSE to " + getClientInfo());
 
             // Add player to waiting queue
             GameManager.getInstance().addWaitingPlayer(this);
-            logger.info(String.format(Constants.LOG_PLAYER_WAITING, getClientInfo()));
 
             // Keep connection alive until client disconnects
             while (connected && !clientSocket.isClosed()) {
@@ -96,8 +84,6 @@ public class ClientHandler implements Runnable {
             }
         } catch (IOException e) {
             logger.warning(String.format(Constants.ERROR_CLIENT_COMMUNICATION, clientAddress, clientPort, e.getMessage()));
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         } finally {
             // Remove from waiting queue if still there
             GameManager.getInstance().removeWaitingPlayer(this);

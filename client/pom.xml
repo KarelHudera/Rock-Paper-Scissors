@@ -138,7 +138,7 @@
                 </os>
             </activation>
             <properties>
-                <javafx.platform>mac</javafx.platform>
+                <javafx.platform>mac-aarch64</javafx.platform>
             </properties>
         </profile>
         <profile>
