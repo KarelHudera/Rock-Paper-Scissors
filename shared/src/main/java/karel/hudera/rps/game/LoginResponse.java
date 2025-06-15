@@ -4,10 +4,10 @@ package karel.hudera.rps.game;
  * **/
 
 public class LoginResponse extends GameMessage {
-    private static final long serialVersionUID = 3L; // Unikátní serialVersionUID
+    private static final long serialVersionUID = 3L;
 
-    private boolean success; // true, pokud bylo přihlášení úspěšné
-    private String message;  // Důvod neúspěchu nebo uvítací/potvrzující zpráva
+    private boolean success;
+    private String message;
 
     public LoginResponse(boolean success, String message) {
         this.success = success;

@@ -4,7 +4,7 @@ package karel.hudera.rps.game;
  * Klient posílá serveru zvolený Enum z Move
  * **/
 public class GameAction extends GameMessage {
-    private static final long serialVersionUID = 5L; // Unikátní serialVersionUID
+    private static final long serialVersionUID = 5L;
 
     private String playerId;
     private Move choice;

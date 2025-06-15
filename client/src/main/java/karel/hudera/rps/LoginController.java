@@ -18,9 +18,11 @@ import java.util.logging.Logger;
 
 public class LoginController {
 
+    //logger a instance klienta
     private static final Logger logger = Logger.getLogger("ClientLogger");
     private Client gameClient;
 
+    //UI prvky
     @FXML
     private TextField usernameField;
     @FXML

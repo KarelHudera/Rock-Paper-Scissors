@@ -3,11 +3,11 @@ package karel.hudera.rps.game;
 public class RoundResult extends GameMessage {
     private static final long serialVersionUID = 1L;
 
-    private Move yourMove;        // Tvůj tah (Enum Move)
-    private Move opponentMove;    // Tah protihráče (Enum Move)
-    private Result roundResult;   // Výsledek kola (Enum Result)
-    private int player1Score;     // Skóre prvního hráče (tvého) po tomto kole
-    private int player2Score;     // Skóre druhého hráče (soupeře) po tomto kole
+    private Move yourMove;
+    private Move opponentMove;
+    private Result roundResult;
+    private int player1Score;
+    private int player2Score;
 
 
     // Konstruktor pro RoundResult
