@@ -1,8 +1,7 @@
 package karel.hudera.rps.client;
 
 import karel.hudera.rps.constants.Constants;
-import karel.hudera.rps.game.GameResult;
-import karel.hudera.rps.game.Move;
+import karel.hudera.rps.game.*;
 import karel.hudera.rps.utils.UserCredentials;
 
 import java.io.*;
@@ -32,128 +31,166 @@ import java.util.logging.Logger;
  */
 public class Client {
 
-    /**
-     * Logger instance for logging client activity
-     */
+    //logger
     private final Logger logger;
-
-    /**
-     * The socket used for communication with the server.
-     */
+    //soket
     private Socket socket;
-
-    /**
-     * Stream for sending objects to the server.
-     */
     private ObjectOutputStream output;
-
-    /**
-     * Stream for receiving objects from the server.
-     */
     private ObjectInputStream input;
+    private String loggedInUsername = null;
 
     /**
-     * Constructs a new Client instance with a specified logger.
-     *
-     * @param logger The logger instance configured for logging to a file.
+     * Konstruktor
      */
     public Client(Logger logger) {
         this.logger = logger;
     }
+    private volatile boolean connected = false;
 
     /**
-     * Initializes the client connection to the specified server and port.
-     * <p>
-     * The client establishes a connection, prompts the user for a username,
-     * and continuously plays rounds of Rock-Paper-Scissors by sending moves
-     * and receiving results from the server.
-     * </p>
-     *
-     * @param serverAddress The address of the server to connect to.
-     * @param port          The port number on which the server is running.
+     * Kontrola připojení klienta.
      */
-    public void initialize(String serverAddress, int port) {
-        try {
-            socket = new Socket(serverAddress, port);
+    public boolean isConnected() {
+        return connected && (socket != null && !socket.isClosed() && socket.isConnected());
+    }
+
+
+    /**
+     * Naváže spojení se serverem na předem definované adrese a portu.
+     * Spustí I/O stream.
+     */
+    private void connect() throws IOException {
+        if (socket == null || socket.isClosed() || !socket.isConnected()) {
+            logger.info("Attempting to connect to server at " + Constants.SERVER_ADDRESS + ":" + Constants.PORT);
+            socket = new Socket(Constants.SERVER_ADDRESS, Constants.PORT);
             output = new ObjectOutputStream(socket.getOutputStream());
             input = new ObjectInputStream(socket.getInputStream());
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            String username;
-            String password;
-
-
-            while (true) {
-                System.out.print(Constants.ENTER_USERNAME);
-                username = reader.readLine();
-
-                System.out.print(Constants.ENTER_PASSWORD);
-                password = reader.readLine();
-
-                // Send credentials
-                UserCredentials.BasicCredentials credentials = new UserCredentials.BasicCredentials(username, password);
-                output.writeObject(credentials);
-                logger.info(Constants.LOG_AUTH_ATTEMPT + username);
-
-                // Read server response
-                Object response = input.readObject();
-                if (Constants.OK.equals(response)) {
-                    logger.info(Constants.LOG_AUTH_SUCCESS + username);
-                    break;
-                } else if (Constants.AUTH_FAILED.equals(response)) {
-                    System.out.println(Constants.AUTH_FAILED);
-                    logger.warning(Constants.LOG_AUTH_FAIL + username);
-                } else if (Constants.USERNAME_TAKEN.equals(response)) {
-                    System.out.println(Constants.USERNAME_TAKEN);
-                    logger.warning(Constants.LOG_DUPLICATE_LOGIN + username);
-                }
-            }
-
-            while (true) {
-                logger.info(Constants.LOG_WAITING_OPPONENT);
-                System.out.println(Constants.WAITING_FOR_OPPONENT);
-                Object message = input.readObject();
-                System.out.println(message);
-                logger.info(Constants.LOG_RECEIVED_MESSAGE + message);
-
-                System.out.print(Constants.ENTER_MOVE);
-                Move move = Move.valueOf(reader.readLine().toUpperCase());
-                output.writeObject(move);
-                logger.info(Constants.LOG_MOVE_SENT + move);
-
-
-                GameResult result = (GameResult) input.readObject();
-                System.out.println(Constants.GAME_RESULT + result.getResult());
-                logger.info(Constants.LOG_GAME_RESULT + result.getResult());
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            logger.log(Level.SEVERE, Constants.LOG_CLIENT_ERROR, e);
-        } finally {
-            closeConnection();
+            logger.info("Successfully connected to server and initialized streams.");
+            this.connected = true;
+        } else {
+            logger.info("Already connected or socket is still active.");
         }
     }
 
     /**
-     * Closes the client connection and releases resources.
-     * <p>
-     * Ensures the socket is properly closed to avoid resource leaks.
-     * </p>
-     */
-    private void closeConnection() {
+     * Odesílá 'LoginRequest' na server a očekává 'LoginResponse'
+     *
+     * Parametry:
+     *    - username: Uživatelské jméno pro autentizaci.
+     *    - password: Heslo pro autentizaci (aktuálně se neposílá na server v LoginRequest).
+     *
+     * Vrátí:
+     *    - boolean: 'true', pokud je autentizace úspěšná; jinak 'false'.
+     * **/
+    public boolean authenticate(String username, String password) {
         try {
-            if (socket != null) {
+            connect();
+
+            LoginRequest request = new LoginRequest(username, password);
+            logger.info(Constants.LOG_AUTH_ATTEMPT + username);
+            output.writeObject(request);
+            output.flush();
+
+            Object responseObj = input.readObject();
+
+            if (responseObj instanceof LoginResponse) {
+                LoginResponse response = (LoginResponse) responseObj;
+                if (response.isSuccess()) {
+                    this.loggedInUsername = username;
+                    logger.info(Constants.LOG_AUTH_SUCCESS + username);
+                    return true;
+                } else {
+                    logger.warning(Constants.LOG_AUTH_FAIL + username + ": " + response.getMessage());
+                    return false;
+                }
+            } else {
+                logger.log(Level.SEVERE, Constants.ERROR_LOGIN_FAILED + " Received unexpected object type during login: " + responseObj.getClass().getName());
+                closeConnection();
+                return false;
+            }
+
+        } catch (IOException | ClassNotFoundException e) {
+            logger.log(Level.SEVERE, Constants.ERROR_LOGIN_FAILED + e.getMessage(), e);
+            closeConnection();
+            return false;
+        }
+    }
+
+
+    /**
+     * Přečte jeden objekt (očekává se 'GameMessage') ze vstupního proudu serveru.
+     * Loguje typ přijaté zprávy.
+     * Vrací přijatou zprávu nebo null.
+     * **/
+    public GameMessage readServerMessage() throws IOException, ClassNotFoundException {
+        if (input != null) {
+            Object obj = input.readObject();
+            if (obj instanceof GameMessage) {
+                logger.info(String.format(Constants.LOG_RECEIVED_MESSAGE + " %s", obj.getClass().getSimpleName()));
+                return (GameMessage) obj;
+            } else {
+                logger.warning(String.format(Constants.LOG_RECEIVED_MESSAGE + " Unexpected type: %s", obj.getClass().getName()));
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Odešle objekt 'GameMessage' na server prostřednictvím výstupního proudu.
+     * Zaloguje informace o odeslané zprávě.
+     */
+    public void sendToServer(GameMessage message) throws IOException {
+        if (output != null) {
+            logger.info(String.format("📤 Client sent message to server: %s - %s", message.getClass().getSimpleName(), message.toString()));
+            output.writeObject(message);
+            output.flush();
+        } else {
+            logger.warning("Attempted to send message but output stream is null.");
+        }
+    }
+
+
+    /**
+     * Bezpečně uzavře klientské spojení se serverem a uvolní všechny související sockety a proudy.
+     * Psílá zprávu o ukončení spojení serveru.
+     */
+    public void closeConnection() {
+        try {
+            if (output != null && socket != null && !socket.isClosed()) {
+                try {
+                    TerminateMessage terminateMessage = new TerminateMessage();
+                    output.writeObject(terminateMessage);
+                    output.flush();
+                    logger.info("Sent TerminateMessage to server.");
+                } catch (IOException e) {
+                    logger.log(Level.WARNING, "Failed to send TerminateMessage before closing: " + e.getMessage());
+                }
+            }
+
+            if (socket != null && !socket.isClosed()) {
                 socket.close();
+                logger.info("Socket closed.");
             }
             if (input != null) {
                 input.close();
+                logger.info("Input stream closed.");
             }
             if (output != null) {
                 output.close();
+                logger.info("Output stream closed.");
             }
+
             logger.info(Constants.LOG_CLIENT_CLOSED);
+            this.connected = false;
 
         } catch (IOException e) {
-            logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR, e);
+            logger.log(Level.SEVERE, Constants.LOG_CLIENT_CLOSE_ERROR + ": " + e.getMessage(), e);
+        } finally {
+            socket = null;
+            input = null;
+            output = null;
+            loggedInUsername = null;
         }
     }
 }
